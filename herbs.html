@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Herbs</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  .herb-detail .detail-head { display:flex; align-items:center; gap:10px; margin-bottom: 8px; }
+  .herb-detail .detail-glyph { font-size: 1.6rem; }
+  .herb-detail h2 { margin-bottom: 2px; }
+  .herb-detail .pills { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <p class="muted center small">Tap an herb for its elemental and planetary correspondences.</p>
+
+    <div class="symbol-grid" id="herbGrid"></div>
+
+    <div class="divider"></div>
+
+    <div class="card rose-accent herb-detail" id="herbDetail">
+      <div class="detail-head">
+        <span class="detail-glyph" id="detailGlyph"></span>
+        <h2 id="detailName"></h2>
+      </div>
+      <div class="pills" id="detailPills"></div>
+      <p id="detailKeywords" style="margin:0;"></p>
+    </div>
+
+  </div>
+</div>
+
+<script src="shared/herbs-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'herbs', title: "Herbs", eyebrow: "Alyssa's Guide to Witchcraft" });
+
+const herbGrid = document.getElementById('herbGrid');
+
+function showHerb(h, tile) {
+  document.querySelectorAll('#herbGrid .symbol-tile').forEach(t => t.classList.remove('selected'));
+  tile.classList.add('selected');
+
+  document.getElementById('detailGlyph').textContent = h.elementGlyph;
+  document.getElementById('detailName').textContent = h.name;
+
+  const pills = [`<span class="pill">${h.element}</span>`];
+  if (h.planet) {
+    pills.push(`<span class="pill gold">${h.planetGlyph} ${h.planet}</span>`);
+  } else {
+    pills.push(`<span class="pill gold">Elemental — no planetary ruler</span>`);
+  }
+  document.getElementById('detailPills').innerHTML = pills.join('');
+  document.getElementById('detailKeywords').textContent = h.keywords.join(', ') + '.';
+}
+
+HerbsData.HERBS.forEach((h) => {
+  const tile = document.createElement('div');
+  tile.className = 'symbol-tile';
+  tile.innerHTML = `<span class="glyph">${h.elementGlyph}</span><span class="label">${h.name}</span>`;
+  tile.addEventListener('click', () => showHerb(h, tile));
+  herbGrid.appendChild(tile);
+});
+
+showHerb(HerbsData.HERBS[0], herbGrid.children[0]);
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Astrology</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  .chart-card { display:flex; justify-content:space-around; text-align:center; }
+  .chart-item .glyph { font-size:1.8rem; color: var(--pine); display:block; }
+  .chart-item .label { font-size:0.7rem; color: var(--ink-soft); }
+  .chart-item .value { font-family: var(--font-display); font-weight:600; color: var(--pine); }
+
+  .sign-detail { display:none; margin-top:10px; }
+  .sign-detail.open { display:block; }
+
+  .planet-row, .house-row { padding: 10px 0; border-bottom: 1px solid var(--ivory-dim); }
+  .planet-row:last-child, .house-row:last-child { border-bottom: none; }
+  .planet-row .title, .house-row .title { font-family: var(--font-display); font-weight:600; color: var(--pine); font-size: 1.05rem; }
+
+  .aspect-row { display:flex; gap:12px; padding: 10px 0; border-bottom: 1px solid var(--ivory-dim); align-items:flex-start; }
+  .aspect-row:last-child { border-bottom:none; }
+  .aspect-symbol { font-size:1.4rem; color: var(--gold); width: 30px; text-align:center; flex-shrink:0; }
+  .aspect-row .title { font-family: var(--font-display); font-weight:600; color:var(--pine); }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <div class="card chart-card">
+      <div class="chart-item"><span class="glyph">☉</span><span class="value">Libra</span><span class="label">Sun</span></div>
+      <div class="chart-item"><span class="glyph">☽</span><span class="value">Cancer</span><span class="label">Moon</span></div>
+      <div class="chart-item"><span class="glyph">ASC</span><span class="value">Scorpio</span><span class="label">Rising</span></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="accordion-item" id="acc-signs">
+      <div class="accordion-header">The 12 Signs <span class="chevron">▾</span></div>
+      <div class="accordion-body">
+        <div class="symbol-grid" id="signGrid"></div>
+        <div class="sign-detail" id="signDetail"></div>
+      </div>
+    </div>
+
+    <div class="accordion-item" id="acc-planets">
+      <div class="accordion-header">Planets <span class="chevron">▾</span></div>
+      <div class="accordion-body" id="planetsBody"></div>
+    </div>
+
+    <div class="accordion-item" id="acc-houses">
+      <div class="accordion-header">Houses <span class="chevron">▾</span></div>
+      <div class="accordion-body" id="housesBody"></div>
+    </div>
+
+    <div class="accordion-item" id="acc-aspects">
+      <div class="accordion-header">Aspects <span class="chevron">▾</span></div>
+      <div class="accordion-body" id="aspectsBody"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="shared/astrology-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'astrology', title: 'Astrology', eyebrow: "Alyssa's Guide to Witchcraft" });
+
+document.querySelectorAll('.accordion-header').forEach(h => {
+  h.addEventListener('click', () => {
+    const item = h.parentElement;
+    const wasOpen = item.classList.contains('open');
+    item.classList.toggle('open', !wasOpen);
+    const body = item.querySelector('.accordion-body');
+    body.style.maxHeight = !wasOpen ? body.scrollHeight + 40 + 'px' : 0;
+  });
+});
+
+// Signs grid
+const signGrid = document.getElementById('signGrid');
+AstrologyData.SIGNS.forEach((s) => {
+  const tile = document.createElement('div');
+  tile.className = 'symbol-tile';
+  tile.innerHTML = `<span class="glyph">${s.symbol}</span><span class="label">${s.name}</span>`;
+  tile.addEventListener('click', () => {
+    document.querySelectorAll('.symbol-tile').forEach(t => t.classList.remove('selected'));
+    tile.classList.add('selected');
+    const detail = document.getElementById('signDetail');
+    detail.innerHTML = `
+      <h3>${s.symbol} ${s.name}</h3>
+      <p class="small muted">${s.dates}</p>
+      <div class="info-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <span class="pill">${s.element}</span>
+        <span class="pill teal">${s.modality}</span>
+        <span class="pill gold">Ruled by ${s.ruler}</span>
+      </div>
+      <p class="small">${s.keywords.join(' · ')}</p>
+    `;
+    detail.classList.add('open');
+    const acc = document.getElementById('acc-signs');
+    acc.querySelector('.accordion-body').style.maxHeight = acc.querySelector('.accordion-body').scrollHeight + 60 + 'px';
+  });
+  signGrid.appendChild(tile);
+});
+
+// Planets
+document.getElementById('planetsBody').innerHTML = AstrologyData.PLANETS.map(p => `
+  <div class="planet-row">
+    <div class="title">${p.symbol} ${p.name}</div>
+    <p class="small" style="margin:4px 0 2px;">${p.domain}</p>
+    <p class="small muted" style="margin:0;">Rules ${p.rules}</p>
+  </div>
+`).join('');
+
+// Houses
+const ORDINALS = ["1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"];
+document.getElementById('housesBody').innerHTML = AstrologyData.HOUSES.map(h => `
+  <div class="house-row">
+    <div class="title">${ORDINALS[h.num-1]} House — ${h.name}</div>
+    <p class="small" style="margin:4px 0 0;">${h.meaning}</p>
+  </div>
+`).join('');
+
+// Aspects
+document.getElementById('aspectsBody').innerHTML = AstrologyData.ASPECTS.map(a => `
+  <div class="aspect-row">
+    <div class="aspect-symbol">${a.symbol}</div>
+    <div>
+      <div class="title">${a.name} <span class="muted small">(${a.angle}, orb ${a.orb})</span></div>
+      <p class="small" style="margin:4px 0 0;">${a.meaning}</p>
+    </div>
+  </div>
+`).join('');
+</script>
+</body>
+</html>

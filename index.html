@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Wheel of the Year</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  .wheel-wrap { display:flex; justify-content:center; margin: 6px 0 18px; }
+  #wheelSvg { width: 100%; max-width: 340px; height: auto; }
+  .wedge { cursor: pointer; stroke: var(--ivory); stroke-width: 1.5; }
+  .wedge.today { filter: drop-shadow(0 0 4px rgba(184,145,47,0.6)); }
+  .wedge-label { font-family: var(--font-body); font-size: 8.5px; fill: var(--ink); pointer-events: none; }
+  .wedge-label.today-label { font-weight: 600; fill: var(--pine-deep); }
+  .center-text { font-family: var(--font-display); fill: var(--pine); text-anchor: middle; }
+  .pointer { fill: var(--gold); }
+  .detail-card { display: none; }
+  .detail-card.open { display: block; }
+  .swatch-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <div class="card center">
+      <h2 id="currentSabbatName">—</h2>
+      <p class="muted" id="progressLabel">Loading the wheel…</p>
+    </div>
+
+    <div class="wheel-wrap">
+      <svg id="wheelSvg" viewBox="0 0 300 300"></svg>
+    </div>
+
+    <p class="muted center small">Tap a section of the wheel for its meanings and correspondences. The wheel is oriented to Northern Hemisphere seasons.</p>
+
+    <div class="divider"></div>
+
+    <div class="card rose-accent detail-card" id="detailCard">
+      <span class="pill gold" id="detailSubtitle"></span>
+      <h2 id="detailName"></h2>
+      <p id="detailDate" class="muted small"></p>
+      <p id="detailMeaning"></p>
+      <h3>Colors</h3>
+      <div class="swatch-row" id="detailColors"></div>
+      <h3 style="margin-top:12px;">Herbs</h3>
+      <div class="swatch-row" id="detailHerbs"></div>
+      <h3 style="margin-top:12px;">Symbols</h3>
+      <div class="swatch-row" id="detailSymbols"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="shared/astro-core.js"></script>
+<script src="shared/wheel-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'home', title: "Wheel of the Year", eyebrow: "Alyssa's Guide to Witchcraft" });
+
+const NS = "http://www.w3.org/2000/svg";
+const CX = 150, CY = 150, R_OUTER = 130, R_INNER = 55, R_LABEL = 95;
+
+function pt(r, angleDeg) {
+  const rad = angleDeg * Math.PI / 180;
+  return [CX + r * Math.sin(rad), CY - r * Math.cos(rad)];
+}
+
+function annulusPath(r1, r2, a0, a1) {
+  const [x0, y0] = pt(r2, a0), [x1, y1] = pt(r2, a1);
+  const [x2, y2] = pt(r1, a1), [x3, y3] = pt(r1, a0);
+  const large = (a1 - a0) > 180 ? 1 : 0;
+  return `M${x0},${y0} A${r2},${r2} 0 ${large} 1 ${x1},${y1} L${x2},${y2} A${r1},${r1} 0 ${large} 0 ${x3},${y3} Z`;
+}
+
+function mod360(x) { return ((x % 360) + 360) % 360; }
+
+function showDetail(id) {
+  const s = WheelData.SABBATS[id];
+  document.getElementById('detailSubtitle').textContent = s.subtitle;
+  document.getElementById('detailName').textContent = s.name;
+  document.getElementById('detailMeaning').textContent = s.meaning;
+  document.getElementById('detailColors').innerHTML = s.colors.map(c => `<span class="pill">${c}</span>`).join('');
+  document.getElementById('detailHerbs').innerHTML = s.herbs.map(c => `<span class="pill teal">${c}</span>`).join('');
+  document.getElementById('detailSymbols').innerHTML = s.symbols.map(c => `<span class="pill rose">${c}</span>`).join('');
+  document.getElementById('detailCard').classList.add('open');
+  document.getElementById('detailCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function buildWheel() {
+  const now = new Date();
+  const { prev, next, fraction } = WheelData.getWheelPosition(now, AstroCore);
+  const prevIdx = WheelData.ORDER.indexOf(prev.id);
+  const currentAngle = mod360(prevIdx * 45 + fraction * 45);
+
+  document.getElementById('currentSabbatName').textContent =
+    WheelData.SABBATS[prev.id].name + ' → ' + WheelData.SABBATS[next.id].name;
+  const daysToNext = Math.round((next.date - now) / 86400000);
+  document.getElementById('progressLabel').textContent =
+    `${Math.round(fraction * 100)}% through this turn of the wheel — ${WheelData.SABBATS[next.id].name} in ${daysToNext} day${daysToNext === 1 ? '' : 's'}`;
+
+  const svg = document.getElementById('wheelSvg');
+  svg.innerHTML = '';
+  const colorA = '#E8E0C9', colorB = '#C7CFAE';
+
+  WheelData.ORDER.forEach((id, i) => {
+    const base0 = i * 45, base1 = base0 + 45;
+    const eff0 = mod360(base0 - currentAngle);
+    let eff1 = eff0 + 45;
+    const isToday = id === prev.id;
+
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', annulusPath(R_INNER, R_OUTER, eff0, eff1));
+    path.setAttribute('class', 'wedge' + (isToday ? ' today' : ''));
+    path.setAttribute('fill', isToday ? 'var(--rose)' : (i % 2 === 0 ? colorA : colorB));
+    path.addEventListener('click', () => showDetail(id));
+    svg.appendChild(path);
+
+    const mid = eff0 + 22.5;
+    const [lx, ly] = pt(R_LABEL, mid);
+    const label = document.createElementNS(NS, 'text');
+    label.setAttribute('x', lx);
+    label.setAttribute('y', ly);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('dominant-baseline', 'middle');
+    label.setAttribute('class', 'wedge-label' + (isToday ? ' today-label' : ''));
+    label.textContent = WheelData.SABBATS[id].name;
+    label.addEventListener('click', () => showDetail(id));
+    svg.appendChild(label);
+  });
+
+  // center
+  const centerCircle = document.createElementNS(NS, 'circle');
+  centerCircle.setAttribute('cx', CX); centerCircle.setAttribute('cy', CY);
+  centerCircle.setAttribute('r', R_INNER - 3);
+  centerCircle.setAttribute('fill', 'var(--ivory)');
+  centerCircle.setAttribute('stroke', 'var(--pine)');
+  centerCircle.setAttribute('stroke-width', '1.5');
+  svg.appendChild(centerCircle);
+
+  const dateText = document.createElementNS(NS, 'text');
+  dateText.setAttribute('x', CX); dateText.setAttribute('y', CY - 4);
+  dateText.setAttribute('class', 'center-text');
+  dateText.setAttribute('font-size', '15');
+  dateText.textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  svg.appendChild(dateText);
+
+  const todayLabel = document.createElementNS(NS, 'text');
+  todayLabel.setAttribute('x', CX); todayLabel.setAttribute('y', CY + 14);
+  todayLabel.setAttribute('class', 'center-text');
+  todayLabel.setAttribute('font-size', '9');
+  todayLabel.setAttribute('fill', 'var(--ink-soft)');
+  todayLabel.setAttribute('font-family', 'var(--font-body)');
+  todayLabel.textContent = 'today';
+  svg.appendChild(todayLabel);
+
+  // fixed pointer at top
+  const pointer = document.createElementNS(NS, 'polygon');
+  const a = pt(R_OUTER + 4, 0);
+  const b = pt(R_OUTER + 16, -5);
+  const c = pt(R_OUTER + 16, 5);
+  pointer.setAttribute('points', `${a[0]},${a[1]} ${b[0]},${b[1]} ${c[0]},${c[1]}`);
+  pointer.setAttribute('class', 'pointer');
+  svg.appendChild(pointer);
+}
+
+buildWheel();
+showDetail(WheelData.getWheelPosition(new Date(), AstroCore).prev.id);
+</script>
+</body>
+</html>

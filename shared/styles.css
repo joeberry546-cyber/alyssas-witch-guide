@@ -1,0 +1,355 @@
+/* ============================================================
+   Alyssa's Guide to Witchcraft — shared styles
+   Palette: pine / moss / ivory / dusty rose / teal / gold
+   Type: Cormorant Garamond (display) + Lora (body)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+:root {
+  --pine: #1F3B2C;
+  --pine-deep: #142A1E;
+  --moss: #7C8A5C;
+  --moss-soft: #A9B48C;
+  --ivory: #F4EEDD;
+  --ivory-dim: #E8E0C9;
+  --rose: #C98A94;
+  --rose-deep: #B06E79;
+  --teal: #2C6664;
+  --gold: #B8912F;
+  --ink: #2B2620;
+  --ink-soft: #52493D;
+  --shadow: rgba(20, 30, 20, 0.18);
+
+  --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Lora', Georgia, serif;
+
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--ivory);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.app-shell {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--ivory);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Header / nav ---------- */
+.app-header {
+  background: var(--pine);
+  color: var(--ivory);
+  padding: 14px 16px;
+  padding-top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: 0 2px 10px var(--shadow);
+}
+
+.menu-btn {
+  background: none;
+  border: 1px solid rgba(244,238,221,0.35);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ivory);
+  cursor: pointer;
+}
+.menu-btn svg { width: 20px; height: 20px; }
+
+.brand-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  color: var(--ivory);
+}
+.brand-icon svg { width: 100%; height: 100%; display: block; }
+
+.app-header h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.85rem;
+  color: var(--ivory);
+  letter-spacing: 0.02em;
+  margin: 0;
+  line-height: 1.15;
+}
+.app-header .page-eyebrow {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+
+.nav-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 30, 20, 0.45);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.nav-scrim.open { opacity: 1; pointer-events: auto; }
+
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 78%;
+  max-width: 320px;
+  background: var(--pine-deep);
+  color: var(--ivory);
+  z-index: 60;
+  transform: translateX(-105%);
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  padding: calc(24px + env(safe-area-inset-top)) 0 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+}
+.nav-drawer.open { transform: translateX(0); }
+
+.nav-drawer .drawer-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding: 0 22px 18px;
+  border-bottom: 1px solid rgba(244,238,221,0.15);
+  margin-bottom: 8px;
+}
+.nav-drawer .drawer-title .title-accent { color: var(--gold); }
+
+.nav-drawer a {
+  color: var(--ivory-dim);
+  text-decoration: none;
+  padding: 14px 22px;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 3px solid transparent;
+}
+.nav-drawer a .glyph {
+  color: var(--gold);
+  font-size: 1.2rem;
+  width: 1.4em;
+  text-align: center;
+}
+.nav-drawer a.active {
+  color: var(--ivory);
+  background: rgba(244,238,221,0.06);
+  border-left-color: var(--rose);
+}
+
+/* ---------- Content ---------- */
+.app-content {
+  flex: 1;
+  padding: 18px 16px 40px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--pine);
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.2rem; }
+
+p { line-height: 1.55; margin: 0 0 12px; }
+
+.card {
+  background: #FFFDF6;
+  border: 1px solid var(--moss-soft);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.card.rose-accent { border-color: var(--rose); }
+.card.teal-accent { border-color: var(--teal); }
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  margin: 18px 0;
+  border: none;
+  opacity: 0.7;
+}
+
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  background: var(--pine);
+  color: var(--ivory);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.btn.secondary {
+  background: transparent;
+  color: var(--pine);
+  border: 1px solid var(--moss);
+}
+.btn.rose { background: var(--rose-deep); }
+
+input[type="text"], input[type="date"], input[type="month"], select {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--moss);
+  background: #FFFDF6;
+  color: var(--ink);
+  width: 100%;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.tabs button {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 9px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--moss);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.tabs button.active {
+  background: var(--pine);
+  color: var(--ivory);
+  border-color: var(--pine);
+}
+
+.accordion-item {
+  border: 1px solid var(--moss-soft);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background: #FFFDF6;
+}
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--pine);
+}
+.accordion-header .chevron {
+  transition: transform 0.2s ease;
+  color: var(--gold);
+}
+.accordion-item.open .chevron { transform: rotate(180deg); }
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 16px;
+}
+.accordion-item.open .accordion-body {
+  padding: 0 16px 16px;
+}
+
+.symbol-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.symbol-tile {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--moss-soft);
+  border-radius: 10px;
+  background: var(--ivory-dim);
+  cursor: pointer;
+  color: var(--pine);
+}
+.symbol-tile .glyph { font-size: 1.6rem; }
+.symbol-tile .label { font-size: 0.68rem; font-family: var(--font-body); margin-top: 2px; }
+.symbol-tile.selected { background: var(--rose); border-color: var(--rose-deep); color: var(--pine-deep); }
+
+table.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+table.ref-table th, table.ref-table td {
+  text-align: left;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--ivory-dim);
+}
+table.ref-table th {
+  color: var(--teal);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+table.ref-table tr.current-row { background: rgba(201,138,148,0.25); }
+
+.pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--moss-soft);
+  color: var(--pine-deep);
+  margin-right: 4px;
+}
+.pill.gold { background: var(--gold); color: var(--pine-deep); }
+.pill.teal { background: var(--teal); color: var(--ivory); }
+.pill.rose { background: var(--rose); color: var(--pine-deep); }
+
+.center { text-align: center; }
+.muted { color: var(--ink-soft); font-size: 0.85rem; }
+.small { font-size: 0.82rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

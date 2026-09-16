@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Solar Hours</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  .loc-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .loc-name { font-family: var(--font-display); font-size:1.05rem; color: var(--pine); }
+  .loc-actions { display:flex; gap:8px; }
+  .loc-actions button { font-size: 0.8rem; padding: 7px 10px; }
+  .search-box { margin-top: 10px; display: none; }
+  .search-box.open { display:block; }
+  .search-results { margin-top: 8px; max-height: 220px; overflow-y:auto; }
+  .search-result-item { padding: 9px 10px; border-bottom: 1px solid var(--ivory-dim); cursor:pointer; font-size:0.9rem; }
+  .search-result-item:hover { background: var(--ivory-dim); }
+  .date-row { display:flex; gap:8px; align-items:center; margin-top:12px; }
+  .wheel-wrap { display:flex; justify-content:center; margin: 10px 0 6px; }
+  #ringSvg { width:100%; max-width: 320px; height:auto; }
+  .hour-wedge { stroke: var(--ivory); stroke-width: 1; }
+  .hour-wedge.current { stroke: var(--rose-deep); stroke-width: 2.5; }
+  .marker-line { stroke: var(--gold); stroke-width: 2.5; }
+  .marker-dot { fill: var(--gold); }
+  .sunrise-label, .sunset-label { font-size: 8px; font-family: var(--font-body); fill: var(--ink-soft); text-anchor:middle; }
+  table.ref-table td.planet-cell { white-space:nowrap; }
+  .glyph-lg { font-size: 1.05rem; margin-right: 4px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <div class="card">
+      <div class="loc-row">
+        <div>
+          <div class="muted small">Location</div>
+          <div class="loc-name" id="locName">Salt Lake City, UT</div>
+        </div>
+        <div class="loc-actions">
+          <button class="btn secondary" id="useGpsBtn">Use my location</button>
+          <button class="btn secondary" id="searchBtn">Search</button>
+        </div>
+      </div>
+      <div class="search-box" id="searchBox">
+        <input type="text" id="citySearch" placeholder="Type a city name…">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="date-row">
+        <span class="muted small">Date</span>
+        <input type="date" id="datePicker">
+        <button class="btn secondary" id="todayBtn">Today</button>
+      </div>
+    </div>
+
+    <div class="wheel-wrap">
+      <svg id="ringSvg" viewBox="0 0 300 300"></svg>
+    </div>
+    <p class="muted center small" id="sunTimesLabel"></p>
+
+    <div class="divider"></div>
+
+    <div class="card">
+      <table class="ref-table" id="hoursTable">
+        <thead>
+          <tr><th>Hour</th><th>Planet</th><th>Start</th><th>End</th></tr>
+        </thead>
+        <tbody id="hoursTableBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script src="shared/astro-core.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'solar', title: 'Solar Hours', eyebrow: "Alyssa's Guide to Witchcraft" });
+
+let siteLocation = { name: 'Salt Lake City, UT', lat: 40.7608, lon: -111.8910, tz: 'America/Denver' };
+let selectedDate = new Date(); // JS date; we use its Y/M/D as the chosen calendar day
+let liveInterval = null;
+
+const datePicker = document.getElementById('datePicker');
+function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+datePicker.value = ymd(selectedDate);
+
+datePicker.addEventListener('change', () => {
+  const [y,m,d] = datePicker.value.split('-').map(Number);
+  selectedDate = new Date(y, m-1, d);
+  render();
+});
+document.getElementById('todayBtn').addEventListener('click', () => {
+  selectedDate = new Date();
+  datePicker.value = ymd(selectedDate);
+  render();
+});
+
+document.getElementById('useGpsBtn').addEventListener('click', () => {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      siteLocation = {
+        name: 'My Location',
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude,
+        tz: Intl.DateTimeFormat().resolvedOptions().timeZone
+      };
+      document.getElementById('locName').textContent = siteLocation.name;
+      render();
+    },
+    () => { /* denied or unavailable: keep current/default siteLocation */ }
+  );
+});
+
+document.getElementById('searchBtn').addEventListener('click', () => {
+  document.getElementById('searchBox').classList.toggle('open');
+});
+
+let searchDebounce = null;
+document.getElementById('citySearch').addEventListener('input', (e) => {
+  clearTimeout(searchDebounce);
+  const q = e.target.value.trim();
+  if (q.length < 2) { document.getElementById('searchResults').innerHTML = ''; return; }
+  searchDebounce = setTimeout(() => runSearch(q), 350);
+});
+
+async function runSearch(q) {
+  const resultsEl = document.getElementById('searchResults');
+  resultsEl.innerHTML = '<div class="muted small" style="padding:6px;">Searching…</div>';
+  try {
+    const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8`);
+    const data = await res.json();
+    if (!data.results || !data.results.length) {
+      resultsEl.innerHTML = '<div class="muted small" style="padding:6px;">No matches found.</div>';
+      return;
+    }
+    resultsEl.innerHTML = '';
+    data.results.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      const region = r.admin1 ? `${r.admin1}, ${r.country}` : r.country;
+      div.textContent = `${r.name} — ${region}`;
+      div.addEventListener('click', () => {
+        siteLocation = { name: `${r.name}, ${r.admin1 || r.country}`, lat: r.latitude, lon: r.longitude, tz: r.timezone };
+        document.getElementById('locName').textContent = siteLocation.name;
+        document.getElementById('searchBox').classList.remove('open');
+        document.getElementById('citySearch').value = '';
+        resultsEl.innerHTML = '';
+        render();
+      });
+      resultsEl.appendChild(div);
+    });
+  } catch (err) {
+    resultsEl.innerHTML = '<div class="muted small" style="padding:6px;">Search unavailable — check your connection.</div>';
+  }
+}
+
+const NS = "http://www.w3.org/2000/svg";
+const CX = 150, CY = 150, R_OUTER = 128, R_INNER = 58, R_LABEL = 92;
+function pt(r, a) { const rad = a*Math.PI/180; return [CX + r*Math.sin(rad), CY - r*Math.cos(rad)]; }
+function annulusPath(r1, r2, a0, a1) {
+  const [x0,y0]=pt(r2,a0), [x1,y1]=pt(r2,a1), [x2,y2]=pt(r1,a1), [x3,y3]=pt(r1,a0);
+  const large = (a1-a0) > 180 ? 1 : 0;
+  return `M${x0},${y0} A${r2},${r2} 0 ${large} 1 ${x1},${y1} L${x2},${y2} A${r1},${r1} 0 ${large} 0 ${x3},${y3} Z`;
+}
+
+function fmtTime(date) {
+  return new Intl.DateTimeFormat('en-US', { hour:'numeric', minute:'2-digit', hour12:true, timeZone: siteLocation.tz }).format(date);
+}
+
+function isSameLocalDay(d1, d2) {
+  const f = new Intl.DateTimeFormat('en-CA', { timeZone: siteLocation.tz, year:'numeric', month:'2-digit', day:'2-digit' });
+  return f.format(d1) === f.format(d2);
+}
+
+function render() {
+  const dateForCalc = new Date(Date.UTC(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()));
+  const result = AstroCore.computePlanetaryHours(dateForCalc, siteLocation.lat, siteLocation.lon);
+  const svg = document.getElementById('ringSvg');
+  svg.innerHTML = '';
+
+  if (!result) {
+    document.getElementById('sunTimesLabel').textContent = 'The sun does not rise or set at this location on this date.';
+    document.getElementById('hoursTableBody').innerHTML = '';
+    return;
+  }
+
+  const { hours, sunrise, sunset, nextSunrise } = result;
+  const totalMs = nextSunrise - sunrise;
+  const now = new Date();
+  const showLive = isSameLocalDay(now, selectedDate) && now >= sunrise && now < nextSunrise;
+
+  document.getElementById('sunTimesLabel').textContent =
+    `Sunrise ${fmtTime(sunrise)} · Sunset ${fmtTime(sunset)} · Next sunrise ${fmtTime(nextSunrise)}`;
+
+  let cumMs = 0;
+  const tbody = document.getElementById('hoursTableBody');
+  tbody.innerHTML = '';
+
+  hours.forEach((h) => {
+    const durMs = h.end - h.start;
+    const a0 = (cumMs / totalMs) * 360;
+    const a1 = ((cumMs + durMs) / totalMs) * 360;
+    cumMs += durMs;
+
+    const isCurrent = showLive && now >= h.start && now < h.end;
+    const isPast = showLive && now >= h.end;
+
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', annulusPath(R_INNER, R_OUTER, a0, a1));
+    let fill;
+    if (h.isDay) fill = isPast ? '#D8CFA8' : '#F1EAD3';
+    else fill = isPast ? '#0E1F16' : '#1F3B2C';
+    path.setAttribute('fill', fill);
+    path.setAttribute('class', 'hour-wedge' + (isCurrent ? ' current' : ''));
+    svg.appendChild(path);
+
+    const mid = a0 + (a1 - a0) / 2;
+    const [lx, ly] = pt(R_LABEL, mid);
+    const label = document.createElementNS(NS, 'text');
+    label.setAttribute('x', lx); label.setAttribute('y', ly);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('dominant-baseline', 'middle');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('fill', h.isDay ? 'var(--ink)' : 'var(--ivory)');
+    label.textContent = AstroCore.PLANET_SYMBOLS[h.planet];
+    svg.appendChild(label);
+
+    const tr = document.createElement('tr');
+    if (isCurrent) tr.className = 'current-row';
+    tr.innerHTML = `<td>${h.latinName}</td>
+      <td class="planet-cell"><span class="glyph-lg">${AstroCore.PLANET_SYMBOLS[h.planet]}</span>${AstroCore.PLANET_NAMES[h.planet]}</td>
+      <td>${fmtTime(h.start)}</td><td>${fmtTime(h.end)}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // center hub
+  const hub = document.createElementNS(NS, 'circle');
+  hub.setAttribute('cx', CX); hub.setAttribute('cy', CY); hub.setAttribute('r', R_INNER - 4);
+  hub.setAttribute('fill', 'var(--ivory)'); hub.setAttribute('stroke', 'var(--pine)'); hub.setAttribute('stroke-width','1.5');
+  svg.appendChild(hub);
+  const hubText = document.createElementNS(NS, 'text');
+  hubText.setAttribute('x', CX); hubText.setAttribute('y', CY);
+  hubText.setAttribute('text-anchor','middle'); hubText.setAttribute('dominant-baseline','middle');
+  hubText.setAttribute('font-family','var(--font-display)'); hubText.setAttribute('fill','var(--pine)');
+  hubText.setAttribute('font-size','13');
+  hubText.textContent = showLive ? fmtTime(now) : selectedDate.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  svg.appendChild(hubText);
+
+  // sunrise / sunset markers at top and computed sunset angle
+  const [srx, sry] = pt(R_OUTER + 12, 0);
+  const srLabel = document.createElementNS(NS,'text');
+  srLabel.setAttribute('x', srx); srLabel.setAttribute('y', sry);
+  srLabel.setAttribute('class','sunrise-label'); srLabel.textContent = '☉ rise';
+  svg.appendChild(srLabel);
+
+  const sunsetAngle = ((sunset - sunrise) / totalMs) * 360;
+  const [ssx, ssy] = pt(R_OUTER + 12, sunsetAngle);
+  const ssLabel = document.createElementNS(NS,'text');
+  ssLabel.setAttribute('x', ssx); ssLabel.setAttribute('y', ssy);
+  ssLabel.setAttribute('class','sunset-label'); ssLabel.textContent = '☉ set';
+  svg.appendChild(ssLabel);
+
+  // live marker
+  if (showLive) {
+    const nowAngle = ((now - sunrise) / totalMs) * 360;
+    const [mx1, my1] = pt(R_INNER, nowAngle);
+    const [mx2, my2] = pt(R_OUTER, nowAngle);
+    const line = document.createElementNS(NS, 'line');
+    line.setAttribute('x1', mx1); line.setAttribute('y1', my1);
+    line.setAttribute('x2', mx2); line.setAttribute('y2', my2);
+    line.setAttribute('class', 'marker-line');
+    svg.appendChild(line);
+    const [dx, dy] = pt(R_OUTER, nowAngle);
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('cx', dx); dot.setAttribute('cy', dy); dot.setAttribute('r', 4);
+    dot.setAttribute('class', 'marker-dot');
+    svg.appendChild(dot);
+  }
+
+  if (liveInterval) clearInterval(liveInterval);
+  if (showLive) liveInterval = setInterval(render, 60000);
+}
+
+// Attempt to auto-detect siteLocation on load; fall back to Salt Lake City.
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      siteLocation = {
+        name: 'My Location',
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude,
+        tz: Intl.DateTimeFormat().resolvedOptions().timeZone
+      };
+      document.getElementById('locName').textContent = siteLocation.name;
+      render();
+    },
+    () => { render(); },
+    { timeout: 6000 }
+  );
+} else {
+  render();
+}
+</script>
+</body>
+</html>

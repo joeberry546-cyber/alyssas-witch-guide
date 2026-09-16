@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Witches' Pyramid</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  .pyramid-wrap { display:flex; justify-content:center; margin: 10px 0 18px; }
+  #pyramidSvg { width: 100%; max-width: 300px; height: auto; }
+  .py-shape { cursor: pointer; stroke: var(--ivory); stroke-width: 1.5; transition: opacity 0.15s ease; }
+  .py-shape:hover { opacity: 0.88; }
+  .py-shape.selected { stroke: var(--rose-deep); stroke-width: 3; }
+  .py-glyph { font-family: var(--font-body); text-anchor: middle; pointer-events: none; }
+  .py-label { font-family: var(--font-body); text-anchor: middle; pointer-events: none; letter-spacing: 0.02em; }
+  .layer-detail .py-detail-head { display:flex; align-items:center; gap:10px; margin-bottom: 6px; }
+  .layer-detail .py-detail-glyph { font-size: 1.6rem; }
+  .layer-detail h2 { margin-bottom: 2px; }
+  .layer-detail .latin { font-style: italic; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <p class="muted center small">Tap a tier of the pyramid — or the circle above it — for its meaning and elemental correspondence.</p>
+
+    <div class="pyramid-wrap">
+      <svg id="pyramidSvg" viewBox="0 0 300 260">
+        <!-- To Go (circle, above the pyramid) -->
+        <circle class="py-shape" id="shape-go" cx="150" cy="28" r="20" fill="var(--gold)"/>
+        <text class="py-glyph" x="150" y="25" font-size="13" fill="var(--pine-deep)" pointer-events="none">✦</text>
+        <text class="py-label" x="150" y="37" font-size="7.5" fill="var(--pine-deep)" pointer-events="none">To Go</text>
+
+        <!-- To Keep Silent (apex) -->
+        <path class="py-shape" id="shape-silent" d="M150,55 L177.5,101.25 L122.5,101.25 Z" fill="var(--pine-deep)"/>
+        <text class="py-glyph" x="150" y="94" font-size="15" fill="var(--ivory)" pointer-events="none">🜃</text>
+
+        <!-- To Dare -->
+        <path class="py-shape" id="shape-dare" d="M122.5,101.25 L177.5,101.25 L205,147.5 L95,147.5 Z" fill="var(--pine)"/>
+        <text class="py-glyph" x="150" y="122" font-size="13" fill="var(--ivory)" pointer-events="none">🜄</text>
+        <text class="py-label" x="150" y="138" font-size="10" fill="var(--ivory)" pointer-events="none">To Dare</text>
+
+        <!-- To Will -->
+        <path class="py-shape" id="shape-will" d="M95,147.5 L205,147.5 L232.5,193.75 L67.5,193.75 Z" fill="var(--moss)"/>
+        <text class="py-glyph" x="150" y="168" font-size="14" fill="var(--ivory)" pointer-events="none">🜂</text>
+        <text class="py-label" x="150" y="185" font-size="11" fill="var(--ivory)" pointer-events="none">To Will</text>
+
+        <!-- To Know (base) -->
+        <path class="py-shape" id="shape-know" d="M67.5,193.75 L232.5,193.75 L260,240 L40,240 Z" fill="var(--moss-soft)"/>
+        <text class="py-glyph" x="150" y="215" font-size="15" fill="var(--pine-deep)" pointer-events="none">🜁</text>
+        <text class="py-label" x="150" y="232" font-size="12" fill="var(--pine-deep)" pointer-events="none">To Know</text>
+      </svg>
+    </div>
+
+    <div class="card rose-accent layer-detail" id="layerDetail">
+      <div class="py-detail-head">
+        <span class="py-detail-glyph" id="detailGlyph"></span>
+        <div>
+          <h2 id="detailName" style="margin-bottom:0;"></h2>
+          <span class="latin small" id="detailLatin"></span>
+        </div>
+      </div>
+      <span class="pill teal" id="detailElement"></span>
+      <p id="detailText" style="margin-top:10px;"></p>
+    </div>
+
+  </div>
+</div>
+
+<script src="shared/pyramid-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'pyramid', title: "Witches' Pyramid", eyebrow: "Alyssa's Guide to Witchcraft" });
+
+const SHAPE_IDS = { know: 'shape-know', will: 'shape-will', dare: 'shape-dare', silent: 'shape-silent', go: 'shape-go' };
+
+function showLayer(id) {
+  const layer = PyramidData.LAYERS.find(l => l.id === id);
+  if (!layer) return;
+
+  document.querySelectorAll('.py-shape').forEach(s => s.classList.remove('selected'));
+  document.getElementById(SHAPE_IDS[id]).classList.add('selected');
+
+  document.getElementById('detailGlyph').textContent = layer.glyph;
+  document.getElementById('detailName').textContent = layer.name;
+  document.getElementById('detailLatin').textContent = layer.latin;
+  document.getElementById('detailElement').textContent = layer.element;
+  document.getElementById('detailText').textContent = layer.text;
+}
+
+Object.entries(SHAPE_IDS).forEach(([id, domId]) => {
+  document.getElementById(domId).addEventListener('click', () => showLayer(id));
+});
+
+showLayer('know');
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Crystals</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  .crystal-detail .detail-head { display:flex; align-items:center; gap:10px; margin-bottom: 8px; }
+  .crystal-detail .detail-glyph { font-size: 1.6rem; }
+  .crystal-detail h2 { margin-bottom: 2px; }
+  .crystal-detail .pills { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <p class="muted center small">Tap a crystal for its chakra correspondence.</p>
+
+    <div class="symbol-grid" id="crystalGrid"></div>
+
+    <div class="divider"></div>
+
+    <div class="card teal-accent crystal-detail" id="crystalDetail">
+      <div class="detail-head">
+        <span class="detail-glyph">◆</span>
+        <h2 id="detailName"></h2>
+      </div>
+      <div class="pills" id="detailPills"></div>
+      <p id="detailText" style="margin:0;"></p>
+    </div>
+
+  </div>
+</div>
+
+<script src="shared/crystals-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'crystals', title: "Crystals", eyebrow: "Alyssa's Guide to Witchcraft" });
+
+const crystalGrid = document.getElementById('crystalGrid');
+
+function showCrystal(c, tile) {
+  document.querySelectorAll('#crystalGrid .symbol-tile').forEach(t => t.classList.remove('selected'));
+  tile.classList.add('selected');
+
+  document.getElementById('detailName').textContent = c.name;
+  document.getElementById('detailPills').innerHTML =
+    c.chakras.map(ch => `<span class="pill teal">${ch}</span>`).join('');
+  document.getElementById('detailText').textContent = c.text;
+}
+
+CrystalsData.CRYSTALS.forEach((c) => {
+  const tile = document.createElement('div');
+  tile.className = 'symbol-tile';
+  tile.innerHTML = `<span class="glyph">◆</span><span class="label">${c.name}</span>`;
+  tile.addEventListener('click', () => showCrystal(c, tile));
+  crystalGrid.appendChild(tile);
+});
+
+showCrystal(CrystalsData.CRYSTALS[0], crystalGrid.children[0]);
+</script>
+</body>
+</html>
