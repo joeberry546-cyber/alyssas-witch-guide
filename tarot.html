@@ -8,17 +8,216 @@
 <title>Alyssa's Guide to Witchcraft — Tarot</title>
 <link rel="stylesheet" href="shared/styles.css">
 <style>
-  .major-row { display:flex; align-items:baseline; gap:10px; padding:9px 0; border-bottom:1px solid var(--ivory-dim); }
-  .major-row:last-child { border-bottom:none; }
-  .major-num { font-family: var(--font-display); color: var(--gold); font-weight:600; width: 34px; flex-shrink:0; }
-  .major-name { font-family: var(--font-display); font-weight:600; color:var(--pine); }
-  .major-keywords { font-size:0.82rem; color:var(--ink-soft); margin-top:2px; }
+  .major-row { 
+    display: flex; 
+    align-items: baseline; 
+    gap: 10px; 
+    padding: 12px 0; 
+    border-bottom: 1px solid var(--ivory-dim);
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .major-row:hover { background-color: var(--ivory-dim); }
+  .major-row:last-child { border-bottom: none; }
+  .major-num { 
+    font-family: var(--font-display); 
+    color: var(--gold); 
+    font-weight: 600; 
+    width: 34px; 
+    flex-shrink: 0; 
+  }
+  .major-header {
+    flex: 1;
+  }
+  .major-name { 
+    font-family: var(--font-display); 
+    font-weight: 600; 
+    color: var(--pine); 
+  }
+  .major-tagline {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
 
-  .minor-row { padding:10px 0; border-bottom:1px solid var(--ivory-dim); }
-  .minor-row:last-child { border-bottom:none; }
-  .minor-row .title { font-family: var(--font-display); font-weight:600; color:var(--pine); }
-  .minor-panel { display:none; }
-  .minor-panel.active { display:block; }
+  /* Minor Arcana Sections */
+  .suit-section {
+    margin-top: 20px;
+  }
+  .suit-header {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--pine);
+    font-size: 1.1rem;
+    padding: 8px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+  .suit-header:hover {
+    color: var(--gold);
+  }
+  .suit-chevron {
+    display: inline-block;
+    transition: transform 0.2s;
+    font-size: 0.9rem;
+  }
+  .suit-section.collapsed .suit-chevron {
+    transform: rotate(-90deg);
+  }
+  .suit-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+    max-height: 1000px;
+    overflow: hidden;
+    transition: max-height 0.3s, opacity 0.3s;
+    opacity: 1;
+  }
+  .suit-section.collapsed .suit-cards {
+    max-height: 0;
+    opacity: 0;
+  }
+  .card-button {
+    background: var(--ivory);
+    border: 1px solid var(--ivory-dim);
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+  .card-button:hover {
+    background: var(--ivory-dim);
+    border-color: var(--gold);
+  }
+  .card-button-title {
+    font-weight: 600;
+    color: var(--pine);
+    margin-bottom: 4px;
+  }
+  .card-button-number {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .modal-overlay.active {
+    display: flex;
+  }
+  .modal-content {
+    background: var(--ivory);
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--ink-soft);
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-close:hover {
+    color: var(--ink);
+  }
+  .modal-number {
+    color: var(--gold);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .modal-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--pine);
+    font-size: 1.4rem;
+    margin: 8px 0;
+  }
+  .modal-tagline {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+  .modal-section {
+    margin-top: 16px;
+  }
+  .modal-section-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--pine);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .modal-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .keyword-tag {
+    background: var(--ivory-dim);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+  }
+  .keyword-tag.reversed {
+    background: var(--gold);
+    color: var(--ivory);
+  }
+  .modal-notes {
+    background: var(--ivory-dim);
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .minor-row { 
+    padding: 10px 0; 
+    border-bottom: 1px solid var(--ivory-dim); 
+  }
+  .minor-row:last-child { border-bottom: none; }
+  .minor-row .title { 
+    font-family: var(--font-display); 
+    font-weight: 600; 
+    color: var(--pine); 
+  }
+  .minor-panel { display: none; }
+  .minor-panel.active { display: block; }
 </style>
 </head>
 <body>
@@ -47,6 +246,20 @@
       <div class="minor-panel" id="panel-courts"></div>
     </div>
 
+    <!-- Minor Arcana Cards by Suit -->
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--ivory-dim);">
+      <h3 style="font-family: var(--font-display); margin-bottom: 16px;">All Cards</h3>
+      <div id="suitSectionsContainer"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="cardModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div id="modalBody"></div>
   </div>
 </div>
 
@@ -55,6 +268,74 @@
 <script>
 initNav({ page: 'tarot', title: 'Tarot', eyebrow: "Alyssa's Guide to Witchcraft" });
 
+// Modal functions
+function openCardModal(card) {
+  const modal = document.getElementById('cardModal');
+  const body = document.getElementById('modalBody');
+  
+  const renderKeywords = (kws) => {
+    return kws.map(kw => `<div class="keyword-tag">${kw}</div>`).join('');
+  };
+
+  const reverseKeywords = (kws) => {
+    return kws.map(kw => `<div class="keyword-tag reversed">${kw}</div>`).join('');
+  };
+
+  let html = '';
+  
+  if (card.number) {
+    html += `<div class="modal-number">${card.number} of ${card.suit}</div>`;
+  } else {
+    html += `<div class="modal-number">${card.num}</div>`;
+  }
+  
+  html += `<div class="modal-name">${card.name}</div>`;
+  html += `<div class="modal-tagline">${card.tagline}</div>`;
+  
+  if (card.keywords && card.keywords.length > 0) {
+    html += `
+      <div class="modal-section">
+        <div class="modal-section-title">Upright Keywords</div>
+        <div class="modal-keywords">${renderKeywords(card.keywords)}</div>
+      </div>
+    `;
+  }
+  
+  if (card.reversedKeywords && card.reversedKeywords.length > 0) {
+    html += `
+      <div class="modal-section">
+        <div class="modal-section-title">Reversed Keywords</div>
+        <div class="modal-keywords">${reverseKeywords(card.reversedKeywords)}</div>
+      </div>
+    `;
+  }
+  
+  if (card.notes) {
+    html += `
+      <div class="modal-section">
+        <div class="modal-section-title">Notes</div>
+        <div class="modal-notes">${card.notes}</div>
+      </div>
+    `;
+  }
+  
+  body.innerHTML = html;
+  modal.classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('cardModal').classList.remove('active');
+}
+
+document.getElementById('cardModal').addEventListener('click', (e) => {
+  if (e.target.id === 'cardModal') closeModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Major Arcana
 document.querySelectorAll('#acc-majors .accordion-header').forEach(h => {
   h.addEventListener('click', () => {
     const item = h.parentElement;
@@ -66,21 +347,22 @@ document.querySelectorAll('#acc-majors .accordion-header').forEach(h => {
 });
 
 document.getElementById('majorsBody').innerHTML = TarotData.MAJORS.map(m => `
-  <div class="major-row">
+  <div class="major-row" onclick="openCardModal(${JSON.stringify(m).replace(/"/g, '&quot;')})">
     <div class="major-num">${m.num}</div>
-    <div>
+    <div class="major-header">
       <div class="major-name">${m.name}</div>
-      <div class="major-keywords">${m.keywords.join(' · ')}</div>
+      <div class="major-tagline">${m.tagline}</div>
     </div>
   </div>
 `).join('');
 
-// initialize the max-height for the majors panel, which starts open
+// Initialize the max-height for the majors panel, which starts open
 {
   const majorsBody = document.getElementById('majorsBody');
   majorsBody.style.maxHeight = majorsBody.scrollHeight + 40 + 'px';
 }
 
+// Minor Arcana Reference Panels
 document.getElementById('panel-numbers').innerHTML = TarotData.NUMBERS.map(n => `
   <div class="minor-row"><div class="title">${n.n}</div><p class="small" style="margin:2px 0 0;">${n.text}</p></div>
 `).join('');
@@ -91,6 +373,38 @@ document.getElementById('panel-courts').innerHTML = TarotData.COURTS.map(c => `
   <div class="minor-row"><div class="title">${c.n}</div><p class="small" style="margin:2px 0 0;">${c.text}</p></div>
 `).join('');
 
+// Minor Arcana Cards by Suit
+const suits = ['Swords', 'Wands', 'Cups', 'Pentacles'];
+const container = document.getElementById('suitSectionsContainer');
+
+suits.forEach(suit => {
+  const cards = TarotData.MINORS_BY_SUIT[suit];
+  
+  const suitSection = document.createElement('div');
+  suitSection.className = 'suit-section collapsed';
+  
+  const suitHeader = document.createElement('div');
+  suitHeader.className = 'suit-header';
+  suitHeader.innerHTML = `<span class="suit-chevron">▶</span> ${suit}`;
+  suitHeader.onclick = () => {
+    suitSection.classList.toggle('collapsed');
+  };
+  
+  const suitCards = document.createElement('div');
+  suitCards.className = 'suit-cards';
+  suitCards.innerHTML = cards.map(card => `
+    <button class="card-button" onclick="openCardModal(${JSON.stringify(card).replace(/"/g, '&quot;')})">
+      <div class="card-button-title">${card.name}</div>
+      <div class="card-button-number">${card.number}</div>
+    </button>
+  `).join('');
+  
+  suitSection.appendChild(suitHeader);
+  suitSection.appendChild(suitCards);
+  container.appendChild(suitSection);
+});
+
+// Tab switching
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));

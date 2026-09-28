@@ -288,25 +288,9 @@ function render() {
   if (showLive) liveInterval = setInterval(render, 60000);
 }
 
-// Attempt to auto-detect siteLocation on load; fall back to Salt Lake City.
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      siteLocation = {
-        name: 'My Location',
-        lat: pos.coords.latitude,
-        lon: pos.coords.longitude,
-        tz: Intl.DateTimeFormat().resolvedOptions().timeZone
-      };
-      document.getElementById('locName').textContent = siteLocation.name;
-      render();
-    },
-    () => { render(); },
-    { timeout: 6000 }
-  );
-} else {
-  render();
-}
+// Default to Salt Lake City; only ask for location permission if the user
+// clicks "Use my location".
+render();
 </script>
 </body>
 </html>
