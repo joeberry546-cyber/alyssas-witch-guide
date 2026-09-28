@@ -31,14 +31,14 @@
         break;
       case 'Waxing Gibbous':
         inner = `<circle cx="0" cy="0" r="${R}" fill="${LIGHT}"/>
-          <g clip-path="url(#${id})"><circle cx="${-R * 0.55}" cy="0" r="${R}" fill="${DARK}"/></g>`;
+          <g clip-path="url(#${id})"><circle cx="${-d}" cy="0" r="${R}" fill="${DARK}"/></g>`;
         break;
       case 'Full Moon':
         inner = `<circle cx="0" cy="0" r="${R}" fill="${LIGHT}"/>`;
         break;
       case 'Waning Gibbous':
         inner = `<circle cx="0" cy="0" r="${R}" fill="${LIGHT}"/>
-          <g clip-path="url(#${id})"><circle cx="${R * 0.55}" cy="0" r="${R}" fill="${DARK}"/></g>`;
+          <g clip-path="url(#${id})"><circle cx="${d}" cy="0" r="${R}" fill="${DARK}"/></g>`;
         break;
       case 'Last Quarter':
         inner = `<circle cx="0" cy="0" r="${R}" fill="${DARK}"/>
