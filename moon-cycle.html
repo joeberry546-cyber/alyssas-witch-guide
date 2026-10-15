@@ -30,6 +30,14 @@
 
   .day-detail { display:none; margin-top: 12px; }
   .day-detail.open { display:block; }
+
+  .phase-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
+  .phase-tile { display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 4px; border:1px solid var(--moss-soft); border-radius:10px; background:var(--ivory-dim); color:var(--pine); cursor:pointer; font-family:var(--font-body); font-size:0.7rem; line-height:1.2; }
+  .phase-tile svg { width:42px; height:42px; }
+  .phase-tile.selected { background: var(--rose); border-color: var(--rose-deep); color: var(--pine-deep); }
+  .phase-detail { display:none; margin-top:12px; }
+  .phase-detail.open { display:block; }
+  .phase-detail table.ref-table th { width: 30%; }
 </style>
 </head>
 <body>
@@ -74,9 +82,29 @@
       <p class="small" id="dayDetailVoc" style="margin-bottom:0;"></p>
     </div>
 
+    <div class="divider"></div>
+
+    <div class="card">
+      <h2>Phase Correspondences</h2>
+      <p class="muted small">Tap a moon phase to see its correspondences.</p>
+      <div class="phase-grid" id="phaseGrid"></div>
+    </div>
+
+    <div class="card teal-accent phase-detail" id="phaseDetail">
+      <span class="pill gold" id="phaseDetailTheme"></span>
+      <h2 id="phaseDetailName"></h2>
+      <table class="ref-table"><tbody id="phaseDetailRows"></tbody></table>
+      <p class="muted small" style="margin:12px 0 0;">Herb and stone notes are for ritual, scent and inspiration. Some herbs are toxic, so check safety before ingesting anything.</p>
+    </div>
+
   </div>
 </div>
 
+<script>
+  // Always start at the top on page load (ignore browser scroll restoration).
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('load', () => window.scrollTo(0, 0));
+</script>
 <script src="shared/astro-core.js"></script>
 <script src="shared/moon-data.js"></script>
 <script src="shared/nav.js"></script>
@@ -173,7 +201,7 @@ function buildCalendar() {
   }
 }
 
-function showDayDetail(dateAtNoon) {
+function showDayDetail(dateAtNoon, scroll = true) {
   const phase = AstroCore.getMoonPhase(dateAtNoon);
   const moonLon = AstroCore.moonPosition(AstroCore.daysSince2000(dateAtNoon)).lon;
   const sign = AstroCore.signFromLongitude(moonLon);
@@ -191,7 +219,7 @@ function showDayDetail(dateAtNoon) {
     document.getElementById('dayDetailVoc').textContent = '';
   }
   document.getElementById('dayDetail').classList.add('open');
-  document.getElementById('dayDetail').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  if (scroll) document.getElementById('dayDetail').scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
 
 document.getElementById('prevMonth').addEventListener('click', () => {
@@ -208,6 +236,38 @@ document.getElementById('monthJump').addEventListener('change', (e) => {
   buildCalendar();
 });
 
+const PHASE_LABELS = [
+  ['bestFor', 'Best for'], ['colors', 'Colors'], ['herbs', 'Herbs'], ['stones', 'Stones'], ['ritual', 'Ritual']
+];
+let selectedPhase = null;
+
+function buildPhaseGrid() {
+  const grid = document.getElementById('phaseGrid');
+  grid.innerHTML = '';
+  MoonData.PHASE_CORRESPONDENCES.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'phase-tile' + (p.name === selectedPhase ? ' selected' : '');
+    btn.setAttribute('aria-label', p.name);
+    btn.innerHTML = `<svg viewBox="-25 -25 50 50">${MoonData.moonIconMarkup(p.name, 22)}</svg><span>${p.name}</span>`;
+    btn.addEventListener('click', () => {
+      selectedPhase = p.name;
+      buildPhaseGrid();
+      showPhaseDetail(p);
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function showPhaseDetail(p, scroll = true) {
+  document.getElementById('phaseDetailTheme').textContent = p.theme;
+  document.getElementById('phaseDetailName').textContent = p.name;
+  document.getElementById('phaseDetailRows').innerHTML =
+    PHASE_LABELS.map(([k, label]) => `<tr><th>${label}</th><td>${p[k]}</td></tr>`).join('');
+  const card = document.getElementById('phaseDetail');
+  card.classList.add('open');
+  if (scroll) card.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
 const initNow = new Date();
 viewYear = initNow.getFullYear();
 viewMonth = initNow.getMonth();
@@ -215,7 +275,8 @@ selectedDayKey = dayKey(viewYear, viewMonth, initNow.getDate());
 
 renderHero();
 buildCalendar();
-showDayDetail(new Date(viewYear, viewMonth, initNow.getDate(), 12, 0, 0));
+showDayDetail(new Date(viewYear, viewMonth, initNow.getDate(), 12, 0, 0), false);
+buildPhaseGrid();
 </script>
 </body>
 </html>

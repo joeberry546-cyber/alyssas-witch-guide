@@ -5,169 +5,269 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<title>Alyssa's Guide to Witchcraft — Wheel of the Year</title>
+<title>Alyssa's Guide to Witchcraft</title>
 <link rel="stylesheet" href="shared/styles.css">
 <style>
-  .wheel-wrap { display:flex; justify-content:center; margin: 6px 0 18px; }
-  #wheelSvg { width: 100%; max-width: 340px; height: auto; }
-  .wedge { cursor: pointer; stroke: var(--ivory); stroke-width: 1.5; }
-  .wedge.today { filter: drop-shadow(0 0 4px rgba(184,145,47,0.6)); }
-  .wedge-label { font-family: var(--font-body); font-size: 8.5px; fill: var(--ink); pointer-events: none; }
-  .wedge-label.today-label { font-weight: 600; fill: var(--pine-deep); }
-  .center-text { font-family: var(--font-display); fill: var(--pine); text-anchor: middle; }
-  .pointer { fill: var(--gold); }
-  .detail-card { display: none; }
-  .detail-card.open { display: block; }
-  .swatch-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  /* Landing page: a title page, then a table of contents.
+     The A is Tangerine Bold, converted to an outline, with the knot and twinkling stars. */
+
+  .title-page { text-align: center; padding: 10px 0 4px; }
+
+  .monogram {
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto 2px;
+  }
+  .monogram .mark { display: block; width: 100%; height: auto; }
+  .mark-knot path { fill: var(--moss-soft); opacity: 0.5; }
+  .mark-a { fill: var(--pine); }
+  .star { transform-box: fill-box; transform-origin: center; animation: twinkle var(--dur, 4.5s) ease-in-out var(--delay, 0s) infinite; }
+  .star.gold { fill: var(--gold); }
+  .star.rose { fill: var(--rose-deep); }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.45; transform: scale(0.78); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  .book-title {
+    font-size: 2rem;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .book-sub {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: var(--ink-soft);
+    margin: 4px 0 0;
+  }
+
+  .verse {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.4rem;
+    line-height: 1.55;
+    color: var(--ink);
+    margin: 0;
+  }
+  .verse span { display: block; }
+
+  .chapters {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    margin-top: 8px;
+  }
+  .chapter-head h2 {
+    font-size: 1.8rem;
+    line-height: 1.1;
+    margin: 0;
+  }
+  .chapter-sub {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.15rem;
+    color: var(--teal);
+    margin: 2px 0 10px;
+  }
+
+  .entries { display: flex; flex-direction: column; }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 62px;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--ivory-dim);
+    color: inherit;
+    text-decoration: none;
+  }
+  .entries .entry:first-child { border-top: 1px solid var(--ivory-dim); }
+
+  .entry .glyph {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--gold);
+    text-align: center;
+  }
+  .entry-name {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.3rem;
+    line-height: 1.2;
+    color: var(--pine);
+  }
+  .entry-desc {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.84rem;
+    line-height: 1.4;
+    color: var(--ink-soft);
+  }
+  .entry .chev { width: 16px; height: 16px; color: var(--moss); }
+
+  a.entry:active { background: rgba(124, 138, 92, 0.14); }
+  a.entry:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 8px; }
+
+  .entry.soon .glyph { color: var(--moss-soft); }
+  .entry.soon .entry-name { color: var(--ink-soft); }
+  .entry.soon .pill { margin-right: 0; }
+
+  .page-end { height: 8px; }
 </style>
 </head>
 <body>
 <div class="app-shell">
-  <div class="app-content">
+  <main class="app-content">
 
-    <div class="card center">
-      <h2 id="currentSabbatName">—</h2>
-      <p class="muted" id="progressLabel">Loading the wheel…</p>
+    <header class="title-page">
+      <div class="monogram">
+      <svg class="mark" viewBox="0 20 420 340" role="img" aria-labelledby="markTitle">
+        <title id="markTitle">A script letter A with a witches' knot and small gold and rose stars</title>
+        <g class="mark-knot" transform="translate(160 138) scale(0.75)"><path d="M -4.06,129.52 L -5.38,128.87 L -8.28,123.75 L -11.54,119.54 L -18.76,103.89 L -22.24,93.06 L -24.12,84.18 L -24.90,72.60 L -24.66,59.06 L -24.01,53.19 L -29.19,50.44 L -37.77,44.77 L -44.69,37.93 L -50.46,29.87 L -56.06,17.53 L -74.03,19.36 L -88.32,17.94 L -96.97,16.17 L -105.63,13.59 L -118.56,7.74 L -122.93,4.58 L -127.29,2.22 L -129.46,0.38 L -129.90,-0.83 L -129.40,-2.13 L -122.78,-7.63 L -110.59,-14.01 L -98.25,-18.75 L -88.47,-21.11 L -79.90,-22.19 L -64.40,-22.49 L -55.67,-21.45 L -54.77,-21.74 L -52.93,-25.80 L -48.38,-33.63 L -41.11,-42.20 L -32.05,-49.27 L -21.82,-54.72 L -22.84,-61.46 L -23.10,-75.61 L -22.35,-82.38 L -19.71,-94.30 L -12.14,-112.02 L -8.96,-118.34 L -4.13,-125.26 L -0.74,-128.72 L 0.90,-129.41 L 2.11,-128.89 L 3.81,-127.07 L 9.14,-118.34 L 13.93,-107.66 L 16.96,-98.03 L 18.53,-90.80 L 20.41,-75.16 L 18.32,-55.75 L 26.78,-52.05 L 31.00,-49.61 L 36.86,-45.54 L 42.88,-40.12 L 49.54,-30.92 L 51.46,-26.26 L 53.56,-23.12 L 61.09,-24.12 L 75.23,-24.27 L 88.32,-22.46 L 99.00,-19.55 L 106.05,-16.48 L 123.83,-5.74 L 129.85,-0.55 L 130.38,0.98 L 129.40,2.84 L 115.86,11.45 L 104.72,16.87 L 99.16,18.62 L 83.06,22.64 L 76.28,23.31 L 68.01,23.61 L 53.87,22.45 L 53.11,23.19 L 48.15,32.86 L 45.54,36.49 L 41.35,41.00 L 36.86,45.12 L 31.30,49.07 L 19.41,54.89 L 19.23,55.75 L 20.23,60.26 L 20.68,68.39 L 18.59,85.54 L 15.51,97.12 L 10.29,109.76 L 6.66,116.08 L 0.76,124.96 L -2.77,129.02 Z M -9.48,-57.77 L -2.41,-58.74 L 7.37,-58.22 L 7.90,-58.76 L 9.55,-65.23 L 10.68,-80.57 L 8.88,-95.47 L 7.75,-102.24 L 4.51,-112.92 L 1.52,-120.30 L 0.15,-122.45 L -3.63,-116.23 L -7.26,-107.96 L -11.11,-94.57 L -10.96,-92.46 L -12.19,-80.91 L -12.10,-69.59 L -10.60,-58.76 Z M -2.56,-35.31 L -1.20,-36.80 L 1.56,-41.90 L 4.25,-48.22 L 3.91,-49.16 L -3.91,-49.34 L -7.85,-48.52 L -6.26,-42.81 Z M 43.63,-21.11 L 43.11,-22.95 L 39.42,-29.11 L 33.85,-35.36 L 30.54,-38.33 L 25.24,-42.05 L 16.10,-46.36 L 15.38,-45.82 L 10.58,-33.93 L 4.70,-23.25 L 9.22,-17.08 L 17.00,-9.08 L 30.39,-16.42 Z M -45.69,-19.18 L -32.50,-14.13 L -24.98,-10.18 L -22.27,-11.78 L -17.60,-15.73 L -10.90,-23.10 L -16.13,-34.68 L -19.56,-44.96 L -20.31,-45.09 L -22.72,-44.06 L -26.18,-41.63 L -27.69,-41.20 L -34.76,-35.62 L -39.27,-30.64 L -42.74,-25.95 L -45.76,-20.24 Z M 57.00,-12.71 L 58.02,-2.63 L 58.08,3.23 L 56.92,11.51 L 60.94,12.74 L 77.19,14.63 L 89.07,13.66 L 99.46,11.32 L 106.38,9.11 L 114.50,5.49 L 121.95,0.98 L 119.92,-1.00 L 107.13,-7.64 L 89.07,-13.06 L 74.03,-14.72 L 61.99,-14.08 L 57.78,-13.44 Z M -57.97,-10.46 L -58.83,-11.38 L -68.46,-12.94 L -77.19,-13.51 L -89.83,-13.08 L -98.85,-11.49 L -111.34,-7.56 L -117.94,-3.39 L -120.29,-1.13 L -118.72,0.00 L -108.94,4.05 L -96.97,7.30 L -87.42,8.69 L -80.20,8.96 L -66.20,7.92 L -59.73,6.63 L -58.61,5.94 L -58.76,-4.14 Z M -2.56,7.74 L 5.97,-0.98 L -3.76,-12.24 L -13.82,-2.48 Z M 48.00,8.73 L 48.87,1.88 L 48.82,-2.93 L 48.13,-9.55 L 47.55,-10.67 L 42.43,-9.20 L 35.51,-6.29 L 27.50,-1.58 L 27.79,-0.83 L 37.01,4.64 L 47.09,9.00 Z M -49.84,2.93 L -48.90,3.27 L -43.33,1.11 L -36.71,-2.16 L -36.28,-2.93 L -43.78,-6.85 L -48.60,-8.06 L -49.41,-6.09 L -50.00,-1.43 Z M -22.42,43.79 L -15.42,26.86 L -10.38,18.28 L -14.88,12.86 L -20.01,8.12 L -24.53,4.80 L -34.46,10.10 L -46.04,14.62 L -46.79,15.18 L -46.88,16.63 L -42.45,25.80 L -37.20,32.88 L -28.44,40.46 Z M 17.91,45.38 L 26.03,41.26 L 33.55,35.26 L 40.12,27.61 L 44.02,20.84 L 43.18,20.12 L 38.97,18.96 L 30.69,15.55 L 21.37,10.53 L 15.95,6.76 L 8.12,13.79 L 5.27,17.23 L 11.87,29.27 L 15.12,37.24 L 17.18,44.76 Z M 6.17,47.90 L 6.42,47.02 L 2.93,38.29 L -2.18,28.81 L -2.86,28.68 L -7.09,35.89 L -11.46,47.32 L -9.03,47.99 L -2.26,48.40 Z M -3.61,120.05 L -2.60,119.39 L 0.95,114.28 L 5.29,106.90 L 8.33,97.88 L 10.96,83.28 L 11.19,73.35 L 10.52,64.32 L 9.37,58.00 L 8.88,57.30 L 0.75,58.17 L -7.67,57.53 L -13.24,56.54 L -14.11,57.25 L -15.68,74.55 L -14.37,90.80 L -12.13,100.13 L -9.47,107.96 L -5.92,116.53 Z" fill-rule="evenodd"/></g>
+        <path class="mark-a" transform="translate(77.95 275.00) scale(0.26 -0.26)" d="M1021 585Q1024 583 1024.0 579.5Q1024 576 1018 570Q985 534 959.0 487.5Q933 441 915.0 386.0Q897 331 887.0 270.0Q877 209 877 145Q877 97 888.5 70.5Q900 44 929 44Q969 44 1005 100Q1008 102 1011.0 100.0Q1014 98 1013 94Q987 52 955.5 26.0Q924 0 897 0Q857 0 836.5 31.0Q816 62 816 119Q816 199 834 282Q787 282 741.5 281.0Q696 280 653 278Q620 243 589.5 212.0Q559 181 530 155Q450 82 365.5 41.0Q281 0 180 0Q126 0 93.5 24.0Q61 48 50.5 85.0Q40 122 51.0 166.0Q62 210 95 251Q98 253 102.0 250.5Q106 248 105 241Q82 216 79.5 183.5Q77 151 93.5 122.5Q110 94 145.0 74.5Q180 55 233 55Q318 55 392.5 90.0Q467 125 533 185Q556 205 579.0 228.0Q602 251 627 276Q592 274 561.0 271.5Q530 269 503 265Q498 266 501.0 270.0Q504 274 510.0 278.5Q516 283 524.5 286.5Q533 290 541 291Q554 292 581.5 292.5Q609 293 644 294Q700 352 768.5 419.5Q837 487 931 561Q864 583 792.5 597.5Q721 612 655 612Q580 612 532.0 570.5Q484 529 473 440Q471 435 467.5 436.0Q464 437 463 442Q475 540 536.0 592.0Q597 644 694 644Q735 644 780.0 638.5Q825 633 868.5 624.5Q912 616 951.5 605.5Q991 595 1021 585ZM837 295Q853 367 882.0 435.0Q911 503 953 560Q865 489 796.0 422.0Q727 355 669 294Q717 295 763.5 295.0Q810 295 837 295Z"/>
+        <g transform="translate(385 118)"><path class="star rose" style="--dur:5.0s;--delay:-0.4s" d="M0.00 -13.00 C1.04 -3.90 3.90 -1.04 13.00 0.00 C3.90 1.04 1.04 3.90 0.00 13.00 C-1.04 3.90 -3.90 1.04 -13.00 0.00 C-3.90 -1.04 -1.04 -3.90 0.00 -13.00Z"/></g><g transform="translate(215 305)"><path class="star rose" style="--dur:4.3s;--delay:-2.7s" d="M0.00 -14.00 C1.12 -4.20 4.20 -1.12 14.00 0.00 C4.20 1.12 1.12 4.20 0.00 14.00 C-1.12 4.20 -4.20 1.12 -14.00 0.00 C-4.20 -1.12 -1.12 -4.20 0.00 -14.00Z"/></g><g transform="translate(30 120)"><path class="star rose" style="--dur:5.8s;--delay:-4.6s" d="M0.00 -10.00 C0.80 -3.00 3.00 -0.80 10.00 0.00 C3.00 0.80 0.80 3.00 0.00 10.00 C-0.80 3.00 -3.00 0.80 -10.00 0.00 C-3.00 -0.80 -0.80 -3.00 0.00 -10.00Z"/></g><g transform="translate(150 340)"><path class="star rose" style="--dur:4.1s;--delay:-1.9s" d="M0.00 -8.00 C0.64 -2.40 2.40 -0.64 8.00 0.00 C2.40 0.64 0.64 2.40 0.00 8.00 C-0.64 2.40 -2.40 0.64 -8.00 0.00 C-2.40 -0.64 -0.64 -2.40 0.00 -8.00Z"/></g><g transform="translate(342 68)"><path class="star gold" style="--dur:4.6s;--delay:-1.2s" d="M0.00 -17.00 C1.36 -5.10 5.10 -1.36 17.00 0.00 C5.10 1.36 1.36 5.10 0.00 17.00 C-1.36 5.10 -5.10 1.36 -17.00 0.00 C-5.10 -1.36 -1.36 -5.10 0.00 -17.00Z"/></g><g transform="translate(62 296)"><path class="star gold" style="--dur:5.4s;--delay:-3.1s" d="M0.00 -13.00 C1.04 -3.90 3.90 -1.04 13.00 0.00 C3.90 1.04 1.04 3.90 0.00 13.00 C-1.04 3.90 -3.90 1.04 -13.00 0.00 C-3.90 -1.04 -1.04 -3.90 0.00 -13.00Z"/></g><g transform="translate(392 215)"><path class="star gold" style="--dur:3.9s;--delay:-2.4s" d="M0.00 -9.00 C0.72 -2.70 2.70 -0.72 9.00 0.00 C2.70 0.72 0.72 2.70 0.00 9.00 C-0.72 2.70 -2.70 0.72 -9.00 0.00 C-2.70 -0.72 -0.72 -2.70 0.00 -9.00Z"/></g>
+      </svg>
+      </div>
+      <h1 class="book-title">Alyssa’s Guide to Witchcraft</h1>
+      <p class="book-sub">my working notes</p>
+
+      <hr class="divider">
+
+      <p class="verse">
+        <span>Moon and root, star and stone,</span>
+        <span>stream and flame, sun and bone,</span>
+        <span>I keep here what I’ve found,</span>
+        <span>and what is known.</span>
+      </p>
+
+      <hr class="divider">
+    </header>
+
+    <div class="chapters">
+
+      <section class="chapter" aria-labelledby="celestial">
+        <div class="chapter-head">
+          <h2 id="celestial">Celestial</h2>
+          <p class="chapter-sub">the sky and its turning</p>
+        </div>
+        <div class="entries">
+          <a class="entry" href="wheel.html">
+            <span class="glyph" aria-hidden="true">☸</span>
+            <span><span class="entry-name">Wheel of the Year</span><span class="entry-desc">Eight sabbats, and where today sits on the wheel.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+          <a class="entry" href="moon-cycle.html">
+            <span class="glyph" aria-hidden="true">☽</span>
+            <span><span class="entry-name">Moon Cycles</span><span class="entry-desc">Phases, moon sign, void-of-course, and the next full moon.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+          <a class="entry" href="solar-hours.html">
+            <span class="glyph" aria-hidden="true">☉</span>
+            <span><span class="entry-name">Solar Hours</span><span class="entry-desc">Today’s twenty-four hours, counted from sunrise where I am.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="divination">
+        <div class="chapter-head">
+          <h2 id="divination">Divination</h2>
+          <p class="chapter-sub">ways of asking</p>
+        </div>
+        <div class="entries">
+          <a class="entry" href="tarot.html">
+            <span class="glyph" aria-hidden="true">🜁</span>
+            <span><span class="entry-name">Tarot</span><span class="entry-desc">All 78 cards, with keywords, reversals, and my class notes.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+          <a class="entry" href="astrology.html">
+            <span class="glyph" aria-hidden="true">✶</span>
+            <span><span class="entry-name">Astrology</span><span class="entry-desc">Signs, planets, houses, aspects, and my own chart.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+          <div class="entry soon" aria-disabled="true">
+            <span class="glyph" aria-hidden="true">ᚠ</span>
+            <span><span class="entry-name">Runes</span></span>
+            <span class="pill">coming soon</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="elements">
+        <div class="chapter-head">
+          <h2 id="elements">Elements</h2>
+          <p class="chapter-sub">what grows and what endures</p>
+        </div>
+        <div class="entries">
+          <a class="entry" href="herbs.html">
+            <span class="glyph" aria-hidden="true">❧</span>
+            <span><span class="entry-name">Herbs</span><span class="entry-desc">Ten herbs, with their elements and planets.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+          <a class="entry" href="crystals.html">
+            <span class="glyph" aria-hidden="true">◆</span>
+            <span><span class="entry-name">Crystals</span><span class="entry-desc">Twelve stones and the chakras they belong to.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+          <a class="entry" href="chakras.html">
+            <span class="glyph" aria-hidden="true">✺</span>
+            <span><span class="entry-name">Chakras</span><span class="entry-desc">The seven centers: lotus, element, and sound.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="craft">
+        <div class="chapter-head">
+          <h2 id="craft">Craft</h2>
+          <p class="chapter-sub">the work of the hands</p>
+        </div>
+        <div class="entries">
+          <a class="entry" href="pyramid.html">
+            <span class="glyph" aria-hidden="true">▲</span>
+            <span><span class="entry-name">Witches’ Pyramid</span><span class="entry-desc">To know, to will, to dare, to keep silent, and to go.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+          <a class="entry" href="spellcrafting.html">
+            <span class="glyph" aria-hidden="true">✦</span>
+            <span><span class="entry-name">Spellcrafting</span><span class="entry-desc">A spell from the first wish to the final action, in seven phases.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="practice">
+        <div class="chapter-head">
+          <h2 id="practice">By This Light</h2>
+          <p class="chapter-sub">what I hold close</p>
+        </div>
+        <div class="entries">
+          <a class="entry" href="principles.html">
+            <span class="glyph" aria-hidden="true">◈</span>
+            <span><span class="entry-name">Principles</span><span class="entry-desc">The mantras and values that temper my practice.</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+          <a class="entry" href="spells.html">
+            <span class="glyph" aria-hidden="true">✒</span>
+            <span><span class="entry-name">Spells</span><span class="entry-desc">The words to which I return</span></span>
+            <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+          </a>
+        </div>
+      </section>
+
     </div>
+    <div class="page-end"></div>
 
-    <div class="wheel-wrap">
-      <svg id="wheelSvg" viewBox="0 0 300 300"></svg>
-    </div>
-
-    <p class="muted center small">Tap a section of the wheel for its meanings and correspondences. The wheel is oriented to Northern Hemisphere seasons.</p>
-
-    <div class="divider"></div>
-
-    <div class="card rose-accent detail-card" id="detailCard">
-      <span class="pill gold" id="detailSubtitle"></span>
-      <h2 id="detailName"></h2>
-      <p id="detailDate" class="muted small"></p>
-      <p id="detailMeaning"></p>
-      <h3>Colors</h3>
-      <div class="swatch-row" id="detailColors"></div>
-      <h3 style="margin-top:12px;">Herbs</h3>
-      <div class="swatch-row" id="detailHerbs"></div>
-      <h3 style="margin-top:12px;">Symbols</h3>
-      <div class="swatch-row" id="detailSymbols"></div>
-    </div>
-
-  </div>
+  </main>
 </div>
-
-<script src="shared/astro-core.js"></script>
-<script src="shared/wheel-data.js"></script>
-<script src="shared/nav.js"></script>
-<script>
-initNav({ page: 'home', title: "Wheel of the Year", eyebrow: "Alyssa's Guide to Witchcraft" });
-
-const NS = "http://www.w3.org/2000/svg";
-const CX = 150, CY = 150, R_OUTER = 130, R_INNER = 55, R_LABEL = 95;
-
-function pt(r, angleDeg) {
-  const rad = angleDeg * Math.PI / 180;
-  return [CX + r * Math.sin(rad), CY - r * Math.cos(rad)];
-}
-
-function annulusPath(r1, r2, a0, a1) {
-  const [x0, y0] = pt(r2, a0), [x1, y1] = pt(r2, a1);
-  const [x2, y2] = pt(r1, a1), [x3, y3] = pt(r1, a0);
-  const large = (a1 - a0) > 180 ? 1 : 0;
-  return `M${x0},${y0} A${r2},${r2} 0 ${large} 1 ${x1},${y1} L${x2},${y2} A${r1},${r1} 0 ${large} 0 ${x3},${y3} Z`;
-}
-
-function mod360(x) { return ((x % 360) + 360) % 360; }
-
-function showDetail(id) {
-  const s = WheelData.SABBATS[id];
-  document.getElementById('detailSubtitle').textContent = s.subtitle;
-  document.getElementById('detailName').textContent = s.name;
-  document.getElementById('detailMeaning').textContent = s.meaning;
-  document.getElementById('detailColors').innerHTML = s.colors.map(c => `<span class="pill">${c}</span>`).join('');
-  document.getElementById('detailHerbs').innerHTML = s.herbs.map(c => `<span class="pill teal">${c}</span>`).join('');
-  document.getElementById('detailSymbols').innerHTML = s.symbols.map(c => `<span class="pill rose">${c}</span>`).join('');
-  document.getElementById('detailCard').classList.add('open');
-  document.getElementById('detailCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function buildWheel() {
-  const now = new Date();
-  const { prev, next, fraction } = WheelData.getWheelPosition(now, AstroCore);
-  const prevIdx = WheelData.ORDER.indexOf(prev.id);
-  const currentAngle = mod360(prevIdx * 45 + fraction * 45);
-
-  document.getElementById('currentSabbatName').textContent =
-    WheelData.SABBATS[prev.id].name + ' → ' + WheelData.SABBATS[next.id].name;
-  const daysToNext = Math.round((next.date - now) / 86400000);
-  document.getElementById('progressLabel').textContent =
-    `${Math.round(fraction * 100)}% through this turn of the wheel — ${WheelData.SABBATS[next.id].name} in ${daysToNext} day${daysToNext === 1 ? '' : 's'}`;
-
-  const svg = document.getElementById('wheelSvg');
-  svg.innerHTML = '';
-  const colorA = '#E8E0C9', colorB = '#C7CFAE';
-
-  WheelData.ORDER.forEach((id, i) => {
-    const base0 = i * 45, base1 = base0 + 45;
-    const eff0 = mod360(base0 - currentAngle);
-    let eff1 = eff0 + 45;
-    const isToday = id === prev.id;
-
-    const path = document.createElementNS(NS, 'path');
-    path.setAttribute('d', annulusPath(R_INNER, R_OUTER, eff0, eff1));
-    path.setAttribute('class', 'wedge' + (isToday ? ' today' : ''));
-    path.setAttribute('fill', isToday ? 'var(--rose)' : (i % 2 === 0 ? colorA : colorB));
-    path.addEventListener('click', () => showDetail(id));
-    svg.appendChild(path);
-
-    const mid = eff0 + 22.5;
-    const [lx, ly] = pt(R_LABEL, mid);
-    const label = document.createElementNS(NS, 'text');
-    label.setAttribute('x', lx);
-    label.setAttribute('y', ly);
-    label.setAttribute('text-anchor', 'middle');
-    label.setAttribute('dominant-baseline', 'middle');
-    label.setAttribute('class', 'wedge-label' + (isToday ? ' today-label' : ''));
-    label.textContent = WheelData.SABBATS[id].name;
-    label.addEventListener('click', () => showDetail(id));
-    svg.appendChild(label);
-  });
-
-  // center
-  const centerCircle = document.createElementNS(NS, 'circle');
-  centerCircle.setAttribute('cx', CX); centerCircle.setAttribute('cy', CY);
-  centerCircle.setAttribute('r', R_INNER - 3);
-  centerCircle.setAttribute('fill', 'var(--ivory)');
-  centerCircle.setAttribute('stroke', 'var(--pine)');
-  centerCircle.setAttribute('stroke-width', '1.5');
-  svg.appendChild(centerCircle);
-
-  const dateText = document.createElementNS(NS, 'text');
-  dateText.setAttribute('x', CX); dateText.setAttribute('y', CY - 4);
-  dateText.setAttribute('class', 'center-text');
-  dateText.setAttribute('font-size', '15');
-  dateText.textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  svg.appendChild(dateText);
-
-  const todayLabel = document.createElementNS(NS, 'text');
-  todayLabel.setAttribute('x', CX); todayLabel.setAttribute('y', CY + 14);
-  todayLabel.setAttribute('class', 'center-text');
-  todayLabel.setAttribute('font-size', '9');
-  todayLabel.setAttribute('fill', 'var(--ink-soft)');
-  todayLabel.setAttribute('font-family', 'var(--font-body)');
-  todayLabel.textContent = 'today';
-  svg.appendChild(todayLabel);
-
-  // fixed pointer at top
-  const pointer = document.createElementNS(NS, 'polygon');
-  const a = pt(R_OUTER + 4, 0);
-  const b = pt(R_OUTER + 16, -5);
-  const c = pt(R_OUTER + 16, 5);
-  pointer.setAttribute('points', `${a[0]},${a[1]} ${b[0]},${b[1]} ${c[0]},${c[1]}`);
-  pointer.setAttribute('class', 'pointer');
-  svg.appendChild(pointer);
-}
-
-buildWheel();
-showDetail(WheelData.getWheelPosition(new Date(), AstroCore).prev.id);
-</script>
 </body>
 </html>

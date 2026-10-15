@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Alyssa's Guide to Witchcraft — Principles</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+
+
+  .lede{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;text-align:center;color:var(--moss);margin:4px 0 22px}
+
+  .acc{border:1px solid var(--ivory-dim);background:#fbf7ec;border-radius:14px;margin-bottom:14px;overflow:hidden}
+  .acc>button{all:unset;box-sizing:border-box;display:block;width:100%;padding:16px 18px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .acc>button:focus-visible{outline:2px solid var(--gold);outline-offset:-4px;border-radius:12px}
+  .acc-top{display:flex;align-items:center;justify-content:space-between}
+  .acc-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.45rem;color:var(--pine);letter-spacing:.02em}
+  .chev{width:10px;height:10px;border-right:2px solid var(--gold);border-bottom:2px solid var(--gold);transform:rotate(45deg);transition:transform .25s;margin-right:4px}
+  .acc.open .chev{transform:rotate(-135deg)}
+  .acc-body{display:none;padding:2px 18px 22px}
+  .acc.open .acc-body{display:block}
+
+  /* Mantras */
+  .mantra{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;color:var(--pine-deep);text-align:center;font-size:1.45rem;line-height:1.3}
+  .mantra.caps{font-style:normal;text-transform:uppercase;letter-spacing:.22em;font-size:1.3rem}
+  .preview{margin-top:10px;min-height:4.2em;display:flex;align-items:center;justify-content:center;transition:opacity .6s}
+  .preview.fade{opacity:0}
+  .acc.open .preview{display:none}
+  .orn{text-align:center;color:var(--gold);margin:16px 0;font-size:.95rem}
+  .acc-body .mantra:first-child{margin-top:8px}
+
+  /* Core values */
+  .rule{height:1px;background:var(--gold);opacity:.55;margin:10px 0}
+  .core{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--pine-deep);text-align:center;padding:10px 0;font-weight:500}
+
+  /* Temper */
+  .temper-head{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.7rem;color:var(--gold);text-align:center;margin:8px 0 14px}
+  .pair{font-family:'Cormorant Garamond',serif;font-size:1.45rem;color:var(--pine-deep);text-align:center;padding:9px 0;font-weight:500}
+  .pair em{color:var(--gold);font-weight:400;padding:0 .2em}
+
+  @media (prefers-reduced-motion:reduce){.preview,.chev{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+<main class="app-content">
+  <p class="lede">What I return to when I lose the thread</p>
+
+  <!-- MANTRAS -->
+  <section class="acc" id="acc-mantras">
+    <button type="button" aria-expanded="false" aria-controls="body-mantras">
+      <span class="acc-top"><span class="acc-title">Mantras</span><span class="chev"></span></span>
+      <div class="preview" id="preview" aria-live="off"><span class="mantra" id="preview-text"></span></div>
+    </button>
+    <div class="acc-body" id="body-mantras">
+      <div class="mantra caps">Thou art that</div>
+      <div class="orn">✦</div>
+      <div class="mantra">Don’t confuse consumption with experience</div>
+      <div class="orn">✦</div>
+      <div class="mantra">Here we are</div>
+      <div class="orn">✦</div>
+      <div class="mantra">The treasure you seek is in the cave you fear to enter</div>
+    </div>
+  </section>
+
+  <!-- CORE VALUES -->
+  <section class="acc" id="acc-core">
+    <button type="button" aria-expanded="false" aria-controls="body-core">
+      <span class="acc-top"><span class="acc-title">Core Values</span><span class="chev"></span></span>
+    </button>
+    <div class="acc-body" id="body-core">
+      <div class="rule"></div>
+      <div class="core">Understanding and truth seeking</div>
+      <div class="core">Human connections and primacy</div>
+      <div class="core">Justice and equity</div>
+      <div class="rule"></div>
+    </div>
+  </section>
+
+  <!-- TEMPER -->
+  <section class="acc" id="acc-temper">
+    <button type="button" aria-expanded="false" aria-controls="body-temper">
+      <span class="acc-top"><span class="acc-title">Guiding Pairs</span><span class="chev"></span></span>
+    </button>
+    <div class="acc-body" id="body-temper">
+      <div class="temper-head">temper</div>
+      <div class="pair">Discipline <em>with</em> Resilience</div>
+      <div class="pair">Confidence <em>with</em> Humility</div>
+      <div class="pair">Power <em>with</em> Responsibility</div>
+      <div class="pair">Grace <em>with</em> Humor</div>
+      <div class="pair">Love <em>with</em> Solitude</div>
+      <div class="pair">Knowledge <em>with</em> Experience</div>
+      <div class="pair">Mystery <em>with</em> Curiosity</div>
+      <div class="fairy-star" style="text-align:center;margin-top:18px;">
+        <img src="assets/fairy-star.svg" alt="Seven-pointed fairy star with a circle behind it" style="display:block;width:100%;max-width:300px;height:auto;margin:0 auto;">
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'principles', title: 'Principles', eyebrow: 'By This Light' });
+(function(){
+  // Accordions
+  document.querySelectorAll('.acc > button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var sec = btn.parentElement;
+      var open = sec.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  // Cycling mantra preview (shown while Mantras is collapsed)
+  var items = [
+    {t:'Thou art that', caps:true},
+    {t:'Don’t confuse consumption with experience'},
+    {t:'Here we are'},
+    {t:'The treasure you seek is in the cave you fear to enter'}
+  ];
+  var box = document.getElementById('preview');
+  var txt = document.getElementById('preview-text');
+  var idx = 0;
+  function show(i){
+    txt.textContent = items[i].t;
+    txt.className = 'mantra' + (items[i].caps ? ' caps' : '');
+  }
+  show(0);
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setInterval(function(){
+    if (document.getElementById('acc-mantras').classList.contains('open')) return;
+    idx = (idx + 1) % items.length;
+    if (reduce){ show(idx); return; }
+    box.classList.add('fade');
+    setTimeout(function(){ show(idx); box.classList.remove('fade'); }, 600);
+  }, 6000);
+})();
+</script>
+</body>
+</html>

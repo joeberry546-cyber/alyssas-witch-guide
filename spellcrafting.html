@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Spellcrafting</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  /* One strand runs down the page, with a numbered node for each phase. */
+  .thread { list-style: none; margin: 0; padding: 0; }
+
+  .phase {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    column-gap: 14px;
+  }
+  .rail { display: flex; flex-direction: column; align-items: center; }
+  .node {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--pine);
+    color: var(--ivory);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1;
+    font-variant-numeric: lining-nums;
+  }
+  .node.physical { background: var(--rose); color: var(--pine-deep); }
+  .rail .line {
+    flex: 1 1 auto;
+    width: 2px;
+    margin: 4px 0;
+    background: var(--moss-soft);
+    border-radius: 1px;
+  }
+  .phase:last-child .rail .line { display: none; }
+
+  .phase-body { padding-bottom: 26px; min-width: 0; }
+  .phase:last-child .phase-body { padding-bottom: 8px; }
+
+  .phase-body h2 { font-size: 1.55rem; line-height: 1.2; margin: 3px 0 4px; }
+  .phase-tag {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.05rem;
+    color: var(--teal);
+    margin: 0 0 8px;
+  }
+  .phase-body p { margin: 0 0 8px; font-size: 0.95rem; }
+
+  /* Lists inside phases: small gold diamonds as markers */
+  .steps, .sub, .rules { list-style: none; margin: 0; padding: 0; }
+  .steps > li, .sub > li, .rules > li {
+    position: relative;
+    padding: 5px 0 5px 18px;
+    line-height: 1.45;
+    font-size: 0.95rem;
+  }
+  .steps > li::before, .sub > li::before, .rules > li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 0.85em;
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+  .sub { margin-top: 2px; }
+  .sub > li { color: var(--ink-soft); font-size: 0.9rem; padding-top: 3px; padding-bottom: 3px; }
+  .sub > li::before { background: var(--moss); width: 5px; height: 5px; }
+
+  .callout {
+    margin: 8px 0 6px;
+    padding: 14px 14px 8px;
+    background: #FFFDF6;
+    border: 1px solid var(--teal);
+    border-radius: 12px;
+  }
+  .callout h3 { margin: 0 0 6px; font-size: 1.2rem; }
+  .callout p { font-size: 0.9rem; color: var(--ink-soft); }
+
+  .links { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
+  a.pill-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid var(--moss);
+    border-radius: 999px;
+    background: #FFFDF6;
+    color: var(--pine);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.02rem;
+    text-decoration: none;
+  }
+  a.pill-link:active { background: var(--ivory-dim); }
+  a.pill-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* Casting checklist */
+  .cast-card { padding: 6px 16px 14px; margin: 6px 0 0; }
+  .cast-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0 6px;
+    border-bottom: 1px solid var(--moss-soft);
+  }
+  #progress { font-family: var(--font-display); font-size: 1.05rem; font-style: italic; font-weight: 500; color: var(--teal); }
+  .reset-btn { padding: 6px 14px; font-size: 0.85rem; }
+
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    min-height: 54px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--ivory-dim);
+    cursor: pointer;
+  }
+  .check:last-child { border-bottom: none; }
+  .check input {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 0 0 auto;
+    display: grid;
+    place-content: center;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    border: 1.5px solid var(--moss);
+    border-radius: 8px;
+    background: #FFFDF6;
+    cursor: pointer;
+  }
+  .check input::after {
+    content: "";
+    width: 13px;
+    height: 7px;
+    margin-top: -3px;
+    border-left: 2.5px solid var(--ivory);
+    border-bottom: 2.5px solid var(--ivory);
+    transform: rotate(-45deg) scale(0);
+    transition: transform 0.12s ease;
+  }
+  .check input:checked { background: var(--pine); border-color: var(--pine); }
+  .check input:checked::after { transform: rotate(-45deg) scale(1); }
+  .check input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .check .label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.25;
+    color: var(--pine);
+    padding-top: 2px;
+  }
+  .check .sub-label {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--ink-soft);
+  }
+  .check.done .label { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--moss); text-decoration-thickness: 1.5px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <main class="app-content">
+
+    <p class="muted center small">From the first wish to the last action, in order. Tick off the casting steps as you go.</p>
+
+    <ol class="thread" role="list">
+
+      <li class="phase">
+        <div class="rail"><span class="node" aria-hidden="true">1</span><span class="line"></span></div>
+        <div class="phase-body">
+          <h2>Craft the spell</h2>
+          <ul class="steps">
+            <li>Start with the need or desire</li>
+            <li>Evaluate the ethics</li>
+            <li>State and refine the goal
+              <div class="callout">
+                <h3>Refining the goal</h3>
+                <p>Start with as many words as you need, then refine it to a simple, clear, specific goal.</p>
+                <ul class="rules">
+                  <li>Clear and specific</li>
+                  <li>In the present tense</li>
+                  <li>Positive: “I am healthy,” instead of “I am not sick.”</li>
+                </ul>
+              </div>
+            </li>
+            <li>Select the timing, method, materials, and symbolic action(s)
+              <div class="links">
+                <a class="pill-link" href="moon-cycle.html">Moon Cycles</a>
+                <a class="pill-link" href="wheel.html">Wheel of the Year</a>
+                <a class="pill-link" href="herbs.html">Herbs</a>
+                <a class="pill-link" href="crystals.html">Crystals</a>
+              </div>
+            </li>
+            <li>Compose the spell
+              <ul class="sub">
+                <li>Write it down step by step, word for word</li>
+                <li>Create an exhaustive materials list</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <li class="phase">
+        <div class="rail"><span class="node physical" aria-hidden="true">2</span><span class="line"></span></div>
+        <div class="phase-body">
+          <h2>Lay the groundwork</h2>
+          <p class="phase-tag">done in the physical world</p>
+          <p>Do anything in the physical realm that needs to be done before the spell is cast and will help the spell along. For example, study for the test or go to the gym.</p>
+        </div>
+      </li>
+
+      <li class="phase">
+        <div class="rail"><span class="node" aria-hidden="true">3</span><span class="line"></span></div>
+        <div class="phase-body">
+          <h2>Prep for casting</h2>
+          <ul class="steps">
+            <li>Gather materials</li>
+            <li>Prepare or craft materials</li>
+          </ul>
+        </div>
+      </li>
+
+      <li class="phase">
+        <div class="rail"><span class="node" aria-hidden="true">4</span><span class="line"></span></div>
+        <div class="phase-body">
+          <h2>Casting</h2>
+          <div class="card cast-card">
+            <div class="cast-head">
+              <span id="progress" aria-live="polite">0 of 10 done</span>
+              <button class="btn secondary reset-btn" id="reset" type="button">Reset</button>
+            </div>
+            <div id="castList">
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">Set up the space</span></label>
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">Purify<span class="sub-label">materials, space, self</span></span></label>
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">Dedicate the space</span></label>
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">State the purpose</span></label>
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">Raise energy</span></label>
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">Perform symbolic acts</span></label>
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">Release energy toward the goal</span></label>
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">Seal the spell</span></label>
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">Grounding</span></label>
+              <label class="check"><input type="checkbox" autocomplete="off"><span class="label">Release the dedicated space</span></label>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="phase">
+        <div class="rail"><span class="node" aria-hidden="true">5</span><span class="line"></span></div>
+        <div class="phase-body">
+          <h2>Clean up</h2>
+          <ul class="steps">
+            <li>Care for any items and materials used or created</li>
+            <li>Dispose of used items properly</li>
+          </ul>
+        </div>
+      </li>
+
+      <li class="phase">
+        <div class="rail"><span class="node" aria-hidden="true">6</span><span class="line"></span></div>
+        <div class="phase-body">
+          <h2>Keep records</h2>
+          <p>Keep copious notes of what was done, as well as dates, times, weather conditions, moon phases, and so on.</p>
+          <div class="links">
+            <a class="pill-link" href="moon-cycle.html">Moon Cycles</a>
+          </div>
+        </div>
+      </li>
+
+      <li class="phase">
+        <div class="rail"><span class="node physical" aria-hidden="true">7</span><span class="line"></span></div>
+        <div class="phase-body">
+          <h2>Action</h2>
+          <p class="phase-tag">done in the physical world</p>
+          <p>Reinforce the spell with actions in the physical realm.</p>
+        </div>
+      </li>
+
+    </ol>
+
+  </main>
+</div>
+
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'spellcrafting', title: "Spellcrafting", eyebrow: "Alyssa's Guide to Witchcraft" });
+
+(function () {
+  const boxes = Array.from(document.querySelectorAll('.check input'));
+  const progress = document.getElementById('progress');
+
+  function update() {
+    let done = 0;
+    boxes.forEach(function (b) {
+      b.closest('.check').classList.toggle('done', b.checked);
+      if (b.checked) done++;
+    });
+    progress.textContent = done === boxes.length
+      ? 'All ' + done + ' steps done'
+      : done + ' of ' + boxes.length + ' done';
+  }
+
+  boxes.forEach(function (b) { b.addEventListener('change', update); });
+  document.getElementById('reset').addEventListener('click', function () {
+    boxes.forEach(function (b) { b.checked = false; });
+    update();
+  });
+  update();
+})();
+</script>
+</body>
+</html>
