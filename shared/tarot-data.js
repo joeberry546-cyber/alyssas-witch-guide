@@ -73,23 +73,23 @@
   // Minor Arcana - organized by suit
   const MINORS_BY_SUIT = {
     Swords: [
-      { number:"One", suit:"Swords", name:"One of Swords", tagline:"Find the Truth", keywords:["New Ideas","Mental Clarity","Truth"], reversedKeywords:["Unclear","Foggy"], notes:"a new spark of inspiration. new conflict" },
+      { number:"Ace", suit:"Swords", name:"Ace of Swords", tagline:"Find the Truth", keywords:["New Ideas","Mental Clarity","Truth"], reversedKeywords:["Unclear","Foggy"], notes:"a new spark of inspiration. new conflict" },
       { number:"Two", suit:"Swords", name:"Two of Swords", tagline:"Stalemate Card", keywords:["Stuck","Unclear","Crossroad"], reversedKeywords:["Indecision","Fear","Worry"], notes:"make a decision" },
       { number:"Three", suit:"Swords", name:"Three of Swords", tagline:"The Heartbreak Card", keywords:["Heartbreak","Sorrow","Grief"], reversedKeywords:["Forgiveness","Optimism"], notes:"heartbreak, consequence of 2 of swords" },
       { number:"Four", suit:"Swords", name:"Four of Swords", tagline:"Rest and Heal", keywords:["Rest","Meditation","Healing"], reversedKeywords:["Stagnation","Burn-out","Tired"], notes:"rest and heal" },
       { number:"Five", suit:"Swords", name:"Five of Swords", tagline:"The Price of Victory", keywords:["Big Picture","Conflict","Tension"], reversedKeywords:["Peace","Compromise"], notes:"know the cost. which battles are worth fighting?" },
       { number:"Six", suit:"Swords", name:"Six of Swords", tagline:"Leaving the Storm", keywords:["Move Forward","Spiral","Go it Alone"], reversedKeywords:["Slow Progress","Repeated Trial"], notes:"journey out of the storm of conflict" },
-      { number:"Seven", suit:"Swords", name:"Seven of Swords", tagline:"Theif's Card", keywords:["Lies","Deceit","Take Advantage"], reversedKeywords:["Truth","Can't Hide","Path Change"], notes:"try a new strategy, exploit an opportunity" },
+      { number:"Seven", suit:"Swords", name:"Seven of Swords", tagline:"Thief's Card", keywords:["Lies","Deceit","Take Advantage"], reversedKeywords:["Truth","Can't Hide","Path Change"], notes:"try a new strategy, exploit an opportunity" },
       { number:"Eight", suit:"Swords", name:"Eight of Swords", tagline:"Trapped by Anxiety", keywords:["Anxiety","Fear","Negative Self Talk"], reversedKeywords:["Feedom","Self Acceptance"], notes:"caught by your anxiety and what you have acceted, even if it's not true" },
       { number:"Nine", suit:"Swords", name:"Nine of Swords", tagline:"The What-if Card", keywords:["Spiraling","Trauma","Unreal Fears"], reversedKeywords:["Mental Clarity","Wake Up"], notes:"self doubt" },
       { number:"Ten", suit:"Swords", name:"Ten of Swords", tagline:"The Betrayal Card", keywords:["Betrayal","Gossip","Rock Bottom"], reversedKeywords:["Look for the Silver Lining"], notes:"don't let the defeat pin you to the mud" },
       { number:"Page", suit:"Swords", name:"Page of Swords", tagline:"Give me a Challenge", keywords:["Curiosity","Thirst for Knowledge"], reversedKeywords:["Hasty","Action without Cause"], notes:"curious about new ideas" },
       { number:"Knight", suit:"Swords", name:"Knight of Swords", tagline:"Intellect in Motion", keywords:["Assertive","Direct","Impatient"], reversedKeywords:["Rude","Tactless","Arrogant"], notes:"swift action, assertive, direct" },
       { number:"Queen", suit:"Swords", name:"Queen of Swords", tagline:"Bad Ass Bitch", keywords:["Independent","Fair","Perceptive"], reversedKeywords:["Cruel","Spiteful","Gossip"], notes:"she don't need no man! speaks up. uses her voice to protect others" },
-      { number:"King", suit:"Swords", name:"King of Swords", tagline:"Consice, Clear of Mind", keywords:["Integrity","Reason","Serious"], reversedKeywords:["Irrational","Dishonest","Cold"], notes:"clear thinking radiates intellectual power. fairly balanced" }
+      { number:"King", suit:"Swords", name:"King of Swords", tagline:"Concise, Clear of Mind", keywords:["Integrity","Reason","Serious"], reversedKeywords:["Irrational","Dishonest","Cold"], notes:"clear thinking radiates intellectual power. fairly balanced" }
     ],
     Wands: [
-      { number:"One", suit:"Wands", name:"One of Wands", tagline:"The Spark of Creativity", keywords:["Inspiration","Creative Energy"], reversedKeywords:["Delays","Disappointment"], notes:"a spark of bliss" },
+      { number:"Ace", suit:"Wands", name:"Ace of Wands", tagline:"The Spark of Creativity", keywords:["Inspiration","Creative Energy"], reversedKeywords:["Delays","Disappointment"], notes:"a spark of bliss" },
       { number:"Two", suit:"Wands", name:"Two of Wands", tagline:"Make a Damn Choice!", keywords:["Progress","Choice","Taking Control"], reversedKeywords:["No good options","Indecisive"], notes:"what should I burn?" },
       { number:"Three", suit:"Wands", name:"Three of Wands", tagline:"Tell Everybody I'm on my Way", keywords:["Expansion","Planning","Travel"], reversedKeywords:["Restriction","Obstacle","Delay"], notes:"the fire spreads" },
       { number:"Four", suit:"Wands", name:"Four of Wands", tagline:"Joyful Celebration", keywords:["Unity","Marriage","Celebration"], reversedKeywords:["Tension","Instability"], notes:"hearth fire, celebration" },
@@ -97,19 +97,19 @@
       { number:"Six", suit:"Wands", name:"Six of Wands", tagline:"Take a Victory Lap", keywords:["Success","Recognition","Fame"], reversedKeywords:["Failure","Humiliation"], notes:"Beacon fire. victory lap" },
       { number:"Seven", suit:"Wands", name:"Seven of Wands", tagline:"Guard your Heart", keywords:["Defense","Competition"], reversedKeywords:["Giving up","Exhaustion"], notes:"protect the flame" },
       { number:"Eight", suit:"Wands", name:"Eight of Wands", tagline:"The Domino Card", keywords:["Travel","Progress","Good News"], reversedKeywords:["Frustration","False Start"], notes:"wildfire! dominos let loose!" },
-      { number:"Nine", suit:"Wands", name:"Nine of Wands", tagline:"The Final Push", keywords:["Resilience","Perserverance"], reversedKeywords:["Mistrust","Weary","Overwhelmed"], notes:"dying ember. get up and finish the race. (Cool Runnings)" },
+      { number:"Nine", suit:"Wands", name:"Nine of Wands", tagline:"The Final Push", keywords:["Resilience","Perseverance"], reversedKeywords:["Mistrust","Weary","Overwhelmed"], notes:"dying ember. get up and finish the race. (Cool Runnings)" },
       { number:"Ten", suit:"Wands", name:"Ten of Wands", tagline:"Was it worth it?", keywords:["Burden","Responsibility","Stress"], reversedKeywords:["Delegation","Lack of Focus"], notes:"What you built is now a burden" },
       { number:"Page", suit:"Wands", name:"Page of Wands", tagline:"Naive Expert", keywords:["Inspiration","Free Spirit","Discovery"], reversedKeywords:["Can't Express","Creative Block"], notes:"Curious spark. Go for it" },
       { number:"Knight", suit:"Wands", name:"Knight of Wands", tagline:"Set it Ablaze", keywords:["Energy","Confident","Risk Taker"], reversedKeywords:["Arrogance","Stagnation","Slow"], notes:"Raging Flame" },
       { number:"Queen", suit:"Wands", name:"Queen of Wands", tagline:"The Silk Dancer", keywords:["Creative","Confident","Assertive"], reversedKeywords:["Jealous","Intorersion","Pull Back"], notes:"Controlled flame" },
-      { number:"King", suit:"Wands", name:"King of Wands", tagline:"Ignite your Vision", keywords:["Entrepeneaur","Problem Solver"], reversedKeywords:["Hasty","Ruthless","Impulsive"], notes:"Fire Keeper (Aragorn)" }
+      { number:"King", suit:"Wands", name:"King of Wands", tagline:"Ignite your Vision", keywords:["Entrepreneur","Problem Solver"], reversedKeywords:["Hasty","Ruthless","Impulsive"], notes:"Fire Keeper (Aragorn)" }
     ],
     Cups: [
-      { number:"One", suit:"Cups", name:"One of Cups", tagline:"New Lease on Life", keywords:["New Emotions","Self Discovery"], reversedKeywords:["Bad Prospect","Self Care"], notes:"The spring begins to flow" },
+      { number:"Ace", suit:"Cups", name:"Ace of Cups", tagline:"New Lease on Life", keywords:["New Emotions","Self Discovery"], reversedKeywords:["Bad Prospect","Self Care"], notes:"The spring begins to flow" },
       { number:"Two", suit:"Cups", name:"Two of Cups", tagline:"Communication Card", keywords:["Harmony","Communication"], reversedKeywords:["Secrets","No trust"], notes:"two streams meet" },
       { number:"Three", suit:"Cups", name:"Three of Cups", tagline:"Dancing Through Life", keywords:["Little Moments","Celebration","Joy"], reversedKeywords:["Drama","Gossip","FOMO"], notes:"spalshing waterfall" },
       { number:"Four", suit:"Cups", name:"Four of Cups", tagline:"Day Dreamer's Card", keywords:["Apathy","Disconnection","Boredom"], reversedKeywords:["Focus","Motivation"], notes:"stagnant pond" },
-      { number:"Five", suit:"Cups", name:"Five of Cups", tagline:"The Despair Card", keywords:["Loss","Greif","Sadness"], reversedKeywords:["Acceptance","Forgiveness"], notes:"Rain water after the storm" },
+      { number:"Five", suit:"Cups", name:"Five of Cups", tagline:"The Despair Card", keywords:["Loss","Grief","Sadness"], reversedKeywords:["Acceptance","Forgiveness"], notes:"Rain water after the storm" },
       { number:"Six", suit:"Cups", name:"Six of Cups", tagline:"Nostalgia Card", keywords:["Inner Child","Healing","Innocence"], reversedKeywords:["Grow up","Stuck in the past"], notes:"Familiar Creek" },
       { number:"Seven", suit:"Cups", name:"Seven of Cups", tagline:"Cups, Cups, Cups", keywords:["Fantasy","Too many Choices"], reversedKeywords:["Take Action","Reality Check"], notes:"Foggy Lake" },
       { number:"Eight", suit:"Cups", name:"Eight of Cups", tagline:"Walk Away from the Past", keywords:["Transition","Change","Move on"], reversedKeywords:["Regret","Past is choosing the path"], notes:"Outgoing Tide" },
@@ -121,11 +121,11 @@
       { number:"King", suit:"Cups", name:"King of Cups", tagline:"Guide with your Heart and Mind", keywords:["Mature","Wisdom","Diplomatic"], reversedKeywords:["Manipulation","Irrational"], notes:"I feel deeply and remain steady" }
     ],
     Pentacles: [
-      { number:"One", suit:"Pentacles", name:"One of Pentacles", tagline:"Grow your Opportunities", keywords:["Opportunities","Abundance"], reversedKeywords:["Greed Setbacks"], notes:"The seed of life" },
+      { number:"Ace", suit:"Pentacles", name:"Ace of Pentacles", tagline:"Grow your Opportunities", keywords:["Opportunities","Abundance"], reversedKeywords:["Greed Setbacks"], notes:"The seed of life" },
       { number:"Two", suit:"Pentacles", name:"Two of Pentacles", tagline:"Balance Yourself", keywords:["Balance","Adapting","Flexibility"], reversedKeywords:["Stressed","Overworked"], notes:"Pick the right spot for it to grow: balance the options" },
       { number:"Three", suit:"Pentacles", name:"Three of Pentacles", tagline:"Teamwork Makes the Dream Work", keywords:["Collaboration","Shared Goal"], reversedKeywords:["Disappointment","Ego"], notes:"First sprout: the team comes together" },
       { number:"Four", suit:"Pentacles", name:"Four of Pentacles", tagline:"The Miser's Card", keywords:["Greed","Frugality","Stability"], reversedKeywords:["Letting Go","Vulnerable"], notes:"Hesitate to re-pot" },
-      { number:"Five", suit:"Pentacles", name:"Five of Pentacles", tagline:"The Destitue Card", keywords:["Hardship","Worry","Struggle"], reversedKeywords:["Forgiveness","Recovery"], notes:"Cold Snap!" },
+      { number:"Five", suit:"Pentacles", name:"Five of Pentacles", tagline:"The Destitute Card", keywords:["Hardship","Worry","Struggle"], reversedKeywords:["Forgiveness","Recovery"], notes:"Cold Snap!" },
       { number:"Six", suit:"Pentacles", name:"Six of Pentacles", tagline:"The Charity Card", keywords:["Sharing","Giving","Gratitude"], reversedKeywords:["Extortion","Power Imbalance"], notes:"Generous Rain" },
       { number:"Seven", suit:"Pentacles", name:"Seven of Pentacles", tagline:"Grow Your Seed", keywords:["Patience","Progress","Planning"], reversedKeywords:["Bad Seed","Empty Reward"], notes:"Pausing in the garden, see what you grown" },
       { number:"Eight", suit:"Pentacles", name:"Eight of Pentacles", tagline:"The Artist's Card", keywords:["Dedication","Skill","Mastery"], reversedKeywords:["Frustration","Burnout"], notes:"Tend the Garden daily" },

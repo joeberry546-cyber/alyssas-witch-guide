@@ -1,16 +1,20 @@
 // Shared header + nav drawer, injected into every page.
-// Usage: call initNav({ page: 'home', title: 'Wheel of the Year', eyebrow: '' })
+// Usage: call initNav({ page: 'wheel', title: 'Wheel of the Year', eyebrow: '' })
 (function () {
   const PAGES = [
-    { id: 'home', href: 'index.html', label: 'Wheel of the Year', glyph: '☸' },
+    { id: 'home', href: 'index.html', label: 'Home', glyph: '⌂' },
+    { id: 'wheel', href: 'wheel.html', label: 'Wheel of the Year', glyph: '☸' },
     { id: 'solar', href: 'solar-hours.html', label: 'Solar Hours', glyph: '☉' },
     { id: 'moon', href: 'moon-cycle.html', label: 'Moon Cycles', glyph: '☽' },
     { id: 'astrology', href: 'astrology.html', label: 'Astrology', glyph: '✶' },
     { id: 'tarot', href: 'tarot.html', label: 'Tarot', glyph: '🜁' },
     { id: 'pyramid', href: 'pyramid.html', label: "Witches' Pyramid", glyph: '▲' },
+    { id: 'spellcrafting', href: 'spellcrafting.html', label: 'Spellcrafting', glyph: '✦' },
     { id: 'herbs', href: 'herbs.html', label: 'Herbs', glyph: '❧' },
     { id: 'crystals', href: 'crystals.html', label: 'Crystals', glyph: '◆' },
-    { id: 'chakras', href: 'chakras.html', label: 'Chakras', glyph: '✺' }
+    { id: 'chakras', href: 'chakras.html', label: 'Chakras', glyph: '✺' },
+    { id: 'principles', href: 'principles.html', label: 'Principles', glyph: '◈' },
+    { id: 'spells', href: 'spells.html', label: 'Spells', glyph: '✒' }
   ];
 
   window.initNav = function ({ page, title, eyebrow }) {

@@ -54,5 +54,45 @@
     return `<defs>${clip}</defs>${inner}<circle cx="0" cy="0" r="${R}" fill="none" stroke="${OUTLINE}" stroke-width="${Math.max(1, R*0.04)}"/>`;
   }
 
-  global.MoonData = { SEASONAL_NAMES, seasonalNameFor, moonIconMarkup };
+  // DRAFT correspondences: traditional and personal blend, edit freely.
+  const PHASE_CORRESPONDENCES = [
+    { name: "New Moon", theme: "Beginnings, intention, rest",
+      bestFor: "Setting intentions, planting seeds, starting something new",
+      colors: "Black, deep indigo, silver",
+      herbs: "Mugwort, jasmine, passionflower",
+      stones: "Black obsidian, labradorite, moonstone",
+      ritual: "Write one intention on paper and keep it somewhere dark and quiet for the cycle" },
+    { name: "Waxing Crescent", theme: "Growth, courage, first action",
+      bestFor: "Taking the first step, building momentum, asking for what you need",
+      colors: "Pale yellow, white, light green",
+      herbs: "Basil, lemongrass, peppermint",
+      stones: "Citrine, carnelian, green aventurine",
+      ritual: "Take one small, concrete action toward your intention and tend a growing plant" },
+    { name: "Waxing Gibbous", theme: "Refinement, patience, adjustment",
+      bestFor: "Editing and refining, troubleshooting, nurturing what is taking shape",
+      colors: "Green, amber, gold",
+      herbs: "Chamomile, dandelion, rosemary",
+      stones: "Tiger's eye, amber, jade",
+      ritual: "Review your plan, adjust what isn't working, and share a mindful cup of tea" },
+    { name: "Full Moon", theme: "Culmination, illumination, release",
+      bestFor: "Celebration, clarity, gratitude, and letting go",
+      colors: "White, silver, pale blue",
+      herbs: "Lavender, white rose, jasmine",
+      stones: "Clear quartz, moonstone, selenite",
+      ritual: "Charge water or stones in moonlight, then write down what you are releasing and dispose of the paper safely" },
+    { name: "Waning Gibbous", theme: "Gratitude, sharing, teaching",
+      bestFor: "Sharing what you have learned, giving thanks, reflecting",
+      colors: "Brown, warm orange, burgundy",
+      herbs: "Cedar, sandalwood, thyme",
+      stones: "Smoky quartz, tourmaline, garnet",
+      ritual: "Keep a gratitude list and pass on one lesson or kindness to someone else" },
+    { name: "Waning Crescent", theme: "Rest, release, clearing space",
+      bestFor: "Rest, letting go, cleansing, and setting boundaries",
+      colors: "Dark blue, grey, black",
+      herbs: "Willow, rue, hyssop",
+      stones: "Amethyst, howlite, black tourmaline",
+      ritual: "Take a cleansing bath or smudge your space, then sleep early and journal what you are ready to put down" }
+  ];
+
+  global.MoonData = { SEASONAL_NAMES, seasonalNameFor, moonIconMarkup, PHASE_CORRESPONDENCES };
 })(typeof window !== "undefined" ? window : globalThis);
