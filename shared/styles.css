@@ -136,6 +136,9 @@ body {
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+  overflow-y: auto;               /* let the full page list scroll on short screens */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .nav-drawer.open { transform: translateX(0); }
 
