@@ -13,6 +13,20 @@
   .chart-item .label { font-size:0.7rem; color: var(--ink-soft); }
   .chart-item .value { font-family: var(--font-display); font-weight:600; color: var(--pine); }
 
+
+  /* Zodiac wheel */
+  .zodiac-wrap { display:flex; justify-content:center; margin: 2px 0 8px; }
+  #zodiacWheel { width:100%; max-width:340px; height:auto; }
+  .zwedge { cursor:pointer; stroke: var(--ivory); stroke-width:1.5; }
+  .zwedge.today { stroke: var(--gold); stroke-width:2.5; filter: drop-shadow(0 0 4px rgba(184,145,47,0.6)); }
+  .zglyph { font-family: var(--font-display); font-size:17px; fill: var(--pine-deep); text-anchor:middle; pointer-events:none; }
+  .zdates { font-family: var(--font-body); font-size:6.4px; fill: var(--ink); text-anchor:middle; pointer-events:none; }
+  .zcenter { font-family: var(--font-display); fill: var(--pine); text-anchor:middle; }
+  .zpointer { fill: var(--gold); }
+  .element-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:6px 14px; margin-top:6px; }
+  .element-legend span { font-size:0.75rem; color: var(--ink-soft); display:inline-flex; align-items:center; gap:5px; }
+  .element-legend i { width:12px; height:12px; border-radius:3px; border:1px solid var(--ink-soft); display:inline-block; }
+
   .sign-detail { display:none; margin-top:10px; }
   .sign-detail.open { display:block; }
 
@@ -34,6 +48,12 @@
       <div class="chart-item"><span class="glyph">☉</span><span class="value">Libra</span><span class="label">Sun</span></div>
       <div class="chart-item"><span class="glyph">☽</span><span class="value">Cancer</span><span class="label">Moon</span></div>
       <div class="chart-item"><span class="glyph">ASC</span><span class="value">Scorpio</span><span class="label">Rising</span></div>
+    </div>
+
+    <div class="card center">
+      <div class="zodiac-wrap"><svg id="zodiacWheel" viewBox="0 0 300 300" role="img" aria-label="Wheel of the zodiac signs"></svg></div>
+      <div class="element-legend" id="elementLegend"></div>
+      <p class="small muted" style="margin:8px 0 0;">Tap a sign to see its details</p>
     </div>
 
     <div class="divider"></div>
@@ -64,6 +84,7 @@
   </div>
 </div>
 
+<script src="shared/astro-core.js"></script>
 <script src="shared/astrology-data.js"></script>
 <script src="shared/nav.js"></script>
 <script>
@@ -79,31 +100,112 @@ document.querySelectorAll('.accordion-header').forEach(h => {
   });
 });
 
-// Signs grid
+// Signs grid + detail
 const signGrid = document.getElementById('signGrid');
-AstrologyData.SIGNS.forEach((s) => {
+const signTiles = [];
+
+function selectSign(i, fromWheel) {
+  const s = AstrologyData.SIGNS[i];
+  signTiles.forEach(t => t.classList.remove('selected'));
+  signTiles[i].classList.add('selected');
+  const detail = document.getElementById('signDetail');
+  detail.innerHTML = `
+    <h3>${s.symbol} ${s.name}</h3>
+    <p class="small muted">${s.dates}</p>
+    <div class="info-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+      <span class="pill">${s.element}</span>
+      <span class="pill teal">${s.modality}</span>
+      <span class="pill gold">Ruled by ${s.ruler}</span>
+    </div>
+    <p class="small">${s.keywords.join(' · ')}</p>
+  `;
+  detail.classList.add('open');
+  const acc = document.getElementById('acc-signs');
+  const body = acc.querySelector('.accordion-body');
+  acc.classList.add('open');
+  body.style.maxHeight = body.scrollHeight + 60 + 'px';
+  if (fromWheel) setTimeout(() => detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 350);
+}
+
+AstrologyData.SIGNS.forEach((s, i) => {
   const tile = document.createElement('div');
   tile.className = 'symbol-tile';
   tile.innerHTML = `<span class="glyph">${s.symbol}</span><span class="label">${s.name}</span>`;
-  tile.addEventListener('click', () => {
-    document.querySelectorAll('.symbol-tile').forEach(t => t.classList.remove('selected'));
-    tile.classList.add('selected');
-    const detail = document.getElementById('signDetail');
-    detail.innerHTML = `
-      <h3>${s.symbol} ${s.name}</h3>
-      <p class="small muted">${s.dates}</p>
-      <div class="info-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-        <span class="pill">${s.element}</span>
-        <span class="pill teal">${s.modality}</span>
-        <span class="pill gold">Ruled by ${s.ruler}</span>
-      </div>
-      <p class="small">${s.keywords.join(' · ')}</p>
-    `;
-    detail.classList.add('open');
-    const acc = document.getElementById('acc-signs');
-    acc.querySelector('.accordion-body').style.maxHeight = acc.querySelector('.accordion-body').scrollHeight + 60 + 'px';
-  });
+  tile.addEventListener('click', () => selectSign(i, false));
+  signTiles.push(tile);
   signGrid.appendChild(tile);
+});
+
+// Zodiac wheel (turns with the Sun's real ecliptic longitude)
+const ZNS = "http://www.w3.org/2000/svg";
+const ZCX = 150, ZCY = 150, Z_OUTER = 136, Z_INNER = 50, Z_GLYPH = 118, Z_DATES = 88;
+const ELEMENT_COLORS = { Fire: '#E6B877', Earth: '#A9B48C', Air: '#EFE8D2', Water: '#7FAEA9' };
+
+function zpt(r, deg) {
+  const rad = deg * Math.PI / 180;
+  return [ZCX + r * Math.sin(rad), ZCY - r * Math.cos(rad)];
+}
+function zannulus(r1, r2, a0, a1) {
+  const [x0, y0] = zpt(r2, a0), [x1, y1] = zpt(r2, a1);
+  const [x2, y2] = zpt(r1, a1), [x3, y3] = zpt(r1, a0);
+  return `M${x0},${y0} A${r2},${r2} 0 0 1 ${x1},${y1} L${x2},${y2} A${r1},${r1} 0 0 0 ${x3},${y3} Z`;
+}
+function zel(tag, attrs, text) {
+  const e = document.createElementNS(ZNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+let zodiacDay = null;
+function buildZodiacWheel() {
+  const now = new Date();
+  zodiacDay = now.toDateString();
+  const sunLon = AstroCore.sunPosition(AstroCore.daysSince2000(now)).lon;
+  const todayIdx = Math.floor(sunLon / 30) % 12;
+  const svg = document.getElementById('zodiacWheel');
+  svg.innerHTML = '';
+
+  const order = AstrologyData.SIGNS.map((_, i) => i).sort((a, b) => (a === todayIdx) - (b === todayIdx));
+  order.forEach(i => {
+    const s = AstrologyData.SIGNS[i];
+    const a0 = i * 30 - sunLon;
+    const path = zel('path', {
+      d: zannulus(Z_INNER, Z_OUTER, a0, a0 + 30),
+      class: 'zwedge' + (i === todayIdx ? ' today' : ''),
+      fill: ELEMENT_COLORS[s.element]
+    });
+    path.addEventListener('click', () => selectSign(i, true));
+    svg.appendChild(path);
+  });
+
+  AstrologyData.SIGNS.forEach((s, i) => {
+    const mid = i * 30 - sunLon + 15;
+    const [gx, gy] = zpt(Z_GLYPH, mid);
+    svg.appendChild(zel('text', { x: gx, y: gy, class: 'zglyph', 'dominant-baseline': 'middle' }, s.symbol + '\uFE0E'));
+    const [d0, d1] = s.dates.split(/\s*[–-]\s*/);
+    const [dx, dy] = zpt(Z_DATES, mid);
+    const t = zel('text', { x: dx, y: dy, class: 'zdates' });
+    t.appendChild(zel('tspan', { x: dx, dy: '-0.3em' }, d0 + ' –'));
+    t.appendChild(zel('tspan', { x: dx, dy: '1.2em' }, d1));
+    svg.appendChild(t);
+  });
+
+  svg.appendChild(zel('circle', { cx: ZCX, cy: ZCY, r: Z_INNER - 3, fill: 'var(--ivory)', stroke: 'var(--pine)', 'stroke-width': 1.5 }));
+  svg.appendChild(zel('text', { x: ZCX, y: ZCY - 5, class: 'zcenter', 'font-size': 15 },
+    now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })));
+  svg.appendChild(zel('text', { x: ZCX, y: ZCY + 12, class: 'zcenter', 'font-size': 8.5, 'font-family': 'var(--font-body)', fill: 'var(--ink-soft)' },
+    'Sun in ' + AstrologyData.SIGNS[todayIdx].name));
+
+  const a = zpt(Z_OUTER + 2, 0), b = zpt(Z_OUTER + 12, -5), c = zpt(Z_OUTER + 12, 5);
+  svg.appendChild(zel('polygon', { points: `${a[0]},${a[1]} ${b[0]},${b[1]} ${c[0]},${c[1]}`, class: 'zpointer' }));
+}
+
+document.getElementById('elementLegend').innerHTML = Object.keys(ELEMENT_COLORS)
+  .map(el => `<span><i style="background:${ELEMENT_COLORS[el]}"></i>${el}</span>`).join('');
+buildZodiacWheel();
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && zodiacDay !== new Date().toDateString()) buildZodiacWheel();
 });
 
 // Planets
