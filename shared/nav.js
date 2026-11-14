@@ -14,7 +14,8 @@
     { id: 'crystals', href: 'crystals.html', label: 'Crystals', glyph: '◆' },
     { id: 'chakras', href: 'chakras.html', label: 'Chakras', glyph: '✺' },
     { id: 'principles', href: 'principles.html', label: 'Principles', glyph: '◈' },
-    { id: 'spells', href: 'spells.html', label: 'Spells', glyph: '✒' }
+    { id: 'spells', href: 'spells.html', label: 'Spells', glyph: '✒' },
+    { id: 'runes', href: 'runes.html', label: 'Runes', glyph: 'ᚠ' }
   ];
 
   window.initNav = function ({ page, title, eyebrow }) {

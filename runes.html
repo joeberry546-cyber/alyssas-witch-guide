@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Runes</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  .aett-section { margin-top: 24px; }
+  .aett-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--pine);
+    font-size: 1.1rem;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--ivory-dim);
+  }
+  .rune-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .rune-button {
+    background: var(--ivory);
+    border: 1px solid var(--ivory-dim);
+    border-radius: 4px;
+    padding: 12px 6px;
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    transition: all 0.2s;
+    color: var(--ink);
+  }
+  .rune-button:hover {
+    background: var(--ivory-dim);
+    border-color: var(--gold);
+  }
+  .rune-glyph {
+    display: block;
+    font-size: 2rem;
+    line-height: 1.2;
+    color: var(--pine);
+  }
+  .rune-name {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+  .rune-section-note {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+  }
+
+  .rune-modal-body h3 {
+    font-family: var(--font-display);
+    color: var(--pine);
+    margin: 0 0 6px;
+  }
+  .rune-modal-glyph {
+    font-size: 3rem;
+    line-height: 1.1;
+    color: var(--pine);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .rune-modal-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--gold);
+    margin: 16px 0 4px;
+  }
+  .rune-modal-text {
+    color: var(--ink);
+    margin: 0;
+  }
+  .rune-modal-pending {
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-content {
+    background: var(--ivory);
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 500px;
+    width: calc(100% - 32px);
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 420px) {
+    .rune-grid { gap: 8px; }
+    .rune-glyph { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <p class="muted small">Tap a rune to see its historical sound and meaning, followed by its divinatory associations.</p>
+
+    <section class="aett-section">
+      <h2>Elder Futhark</h2>
+      <p class="rune-section-note">The 24 runes of the oldest known runic alphabet, grouped into three <em>ættir</em> (families of eight).</p>
+      <div id="elderGroups"></div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="aett-section">
+      <h2>Anglo-Saxon additions</h2>
+      <p class="rune-section-note">Extra runes from the Anglo-Saxon futhorc, added for Old English sounds. The Elder Futhark runes they share are listed above.</p>
+      <div class="rune-grid" id="angloGrid"></div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="aett-section">
+      <h2>Younger Futhark</h2>
+      <p class="rune-section-note">The 16-rune alphabet used in Scandinavia from the late 8th century. Its divinatory meanings are still to come.</p>
+      <div class="rune-grid" id="youngerGrid"></div>
+    </section>
+
+  </div>
+</div>
+
+<div class="modal-overlay" id="runeModal">
+  <div class="modal-content">
+    <button class="modal-close" id="runeModalClose" aria-label="Close">&times;</button>
+    <div class="rune-modal-body" id="runeModalBody"></div>
+  </div>
+</div>
+
+<script src="shared/runes-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'runes', title: 'Runes', eyebrow: "Alyssa's Guide to Witchcraft" });
+
+(function () {
+  const R = window.RUNES;
+
+  function runeButton(rune, onOpen) {
+    const btn = document.createElement('button');
+    btn.className = 'rune-button';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', rune.name + ' rune');
+    btn.innerHTML =
+      '<span class="rune-glyph" aria-hidden="true">' + rune.glyph + '</span>' +
+      '<span class="rune-name">' + rune.name + '</span>';
+    btn.addEventListener('click', () => onOpen(rune));
+    return btn;
+  }
+
+  function openModal(rune, showDivinatory) {
+    const body = document.getElementById('runeModalBody');
+    let divHtml;
+    if (showDivinatory && rune.divinatory) {
+      divHtml = '<p class="rune-modal-text">' + rune.divinatory + '</p>';
+    } else {
+      divHtml = '<p class="rune-modal-text rune-modal-pending">Divinatory meaning to come.</p>';
+    }
+    body.innerHTML =
+      '<div class="rune-modal-glyph" aria-hidden="true">' + rune.glyph + '</div>' +
+      '<h3>' + rune.name + '</h3>' +
+      '<p class="rune-modal-text muted small">Sound: ' + rune.sound + '</p>' +
+      '<div class="rune-modal-label">Historical sound and meaning</div>' +
+      '<p class="rune-modal-text">' + rune.historical + '</p>' +
+      '<div class="rune-modal-label">Divinatory meaning</div>' +
+      divHtml;
+    document.getElementById('runeModal').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('runeModal').classList.remove('active');
+  }
+
+  document.getElementById('runeModalClose').addEventListener('click', closeModal);
+  document.getElementById('runeModal').addEventListener('click', function (e) {
+    if (e.target === this) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  const elderHost = document.getElementById('elderGroups');
+  R.aettir.forEach(function (aett) {
+    const section = document.createElement('div');
+    section.className = 'aett-section';
+    const title = document.createElement('h3');
+    title.className = 'aett-title';
+    title.textContent = aett.label;
+    section.appendChild(title);
+    const grid = document.createElement('div');
+    grid.className = 'rune-grid';
+    R.elder
+      .filter(function (r) { return r.aett === aett.id; })
+      .forEach(function (r) { grid.appendChild(runeButton(r, function (x) { openModal(x, true); })); });
+    section.appendChild(grid);
+    elderHost.appendChild(section);
+  });
+
+  const angloHost = document.getElementById('angloGrid');
+  R.angloSaxon.forEach(function (r) {
+    angloHost.appendChild(runeButton(r, function (x) { openModal(x, true); }));
+  });
+
+  const youngerHost = document.getElementById('youngerGrid');
+  R.younger.forEach(function (r) {
+    youngerHost.appendChild(runeButton(r, function (x) { openModal(x, false); }));
+  });
+})();
+</script>
+</body>
+</html>
