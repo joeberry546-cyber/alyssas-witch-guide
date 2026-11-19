@@ -42,6 +42,11 @@
   .pair{font-family:'Cormorant Garamond',serif;font-size:1.45rem;color:var(--pine-deep);text-align:center;padding:9px 0;font-weight:500}
   .pair em{color:var(--gold);font-weight:400;padding:0 .2em}
 
+  /* Notable quotes */
+  .quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;color:var(--pine-deep);text-align:center;font-size:1.4rem;line-height:1.35}
+  .quote-by{text-align:center;color:var(--gold);font-family:'Lora',serif;font-size:.82rem;letter-spacing:.06em;margin-top:8px}
+  .acc-body .quote:first-child{margin-top:8px}
+
   @media (prefers-reduced-motion:reduce){.preview,.chev{transition:none}}
 </style>
 </head>
@@ -99,6 +104,20 @@
       <div class="fairy-star" style="text-align:center;margin-top:18px;">
         <img src="assets/fairy-star.svg" alt="Seven-pointed fairy star with a circle behind it" style="display:block;width:100%;max-width:300px;height:auto;margin:0 auto;">
       </div>
+    </div>
+  </section>
+
+  <!-- NOTABLE QUOTES -->
+  <section class="acc" id="acc-quotes">
+    <button type="button" aria-expanded="false" aria-controls="body-quotes">
+      <span class="acc-top"><span class="acc-title">Notable Quotes</span><span class="chev"></span></span>
+    </button>
+    <div class="acc-body" id="body-quotes">
+      <div class="quote">“Practice is better than art; your practice may very well be useful without art, but your art is useless without practice.”</div>
+      <div class="quote-by">— Pseudo-Hans Döbringer, Ms. 3227a</div>
+      <div class="orn">✦</div>
+      <div class="quote">“We are starstuff. We are the universe made manifest, trying to figure itself out.”</div>
+      <div class="quote-by">— Delenn, Babylon 5</div>
     </div>
   </section>
 </main>
