@@ -4,6 +4,7 @@
 
   const SABBATS = {
     yule: {
+      dateText: "December 20–22", solar: true,
       name: "Yule", subtitle: "Winter Solstice",
       meaning: "The longest night of the year and the quiet rebirth of the sun. A turning point where the light begins, almost imperceptibly, to return.",
       colors: ["Red", "Green", "White", "Gold"],
@@ -11,6 +12,7 @@
       symbols: ["Yule log", "Evergreen wreath", "Candles"]
     },
     imbolc: {
+      dateText: "February 1", solar: false,
       name: "Imbolc", subtitle: "First Stirrings of Spring",
       meaning: "The earliest signs of life beneath the frost. A festival of purification, hearth-fires, and the first candle-lit promise of spring.",
       colors: ["White", "Pale yellow", "Light green"],
@@ -18,6 +20,7 @@
       symbols: ["Candles", "Brigid's cross", "Milk and grain"]
     },
     ostara: {
+      dateText: "March 19–21", solar: true,
       name: "Ostara", subtitle: "Spring Equinox",
       meaning: "Day and night in perfect balance, tipping toward the light. A time of new growth, fertility, and fresh starts.",
       colors: ["Pastel green", "Pink", "Yellow"],
@@ -25,6 +28,7 @@
       symbols: ["Eggs", "Rabbits", "Seeds"]
     },
     beltane: {
+      dateText: "May 1", solar: false,
       name: "Beltane", subtitle: "Peak of Spring",
       meaning: "The height of spring's fertility and passion, traditionally marked with bonfires and flowers. A festival of union and vitality.",
       colors: ["Red", "White", "Green"],
@@ -32,6 +36,7 @@
       symbols: ["Maypole", "Bonfires", "Flower crowns"]
     },
     litha: {
+      dateText: "June 20–22", solar: true,
       name: "Litha", subtitle: "Summer Solstice",
       meaning: "The longest day and the sun at its full strength. A celebration of abundance, growth, and the peak of the light half of the year.",
       colors: ["Gold", "Yellow", "Sky blue"],
@@ -39,6 +44,7 @@
       symbols: ["Bonfires", "Sun wheels", "Wildflowers"]
     },
     lughnasadh: {
+      dateText: "August 1", solar: false,
       name: "Lughnasadh", subtitle: "First Harvest",
       meaning: "The first of the three harvest festivals, honoring bread, grain, and the labor of the growing season. A time of gratitude and gathering.",
       colors: ["Golden yellow", "Orange", "Wheat"],
@@ -46,6 +52,7 @@
       symbols: ["Bread", "Corn dollies", "Sickles"]
     },
     mabon: {
+      dateText: "September 21–23", solar: true,
       name: "Mabon", subtitle: "Fall Equinox",
       meaning: "The second harvest, and balance once again — this time tipping toward the dark. A moment for gratitude and preparing for winter.",
       colors: ["Deep orange", "Brown", "Burgundy"],
@@ -53,6 +60,7 @@
       symbols: ["Cornucopia", "Apples", "Wine"]
     },
     samhain: {
+      dateText: "October 31", solar: false,
       name: "Samhain", subtitle: "Descent into Winter",
       meaning: "The veil between worlds grows thin. A festival of ancestors, endings, and honoring what has passed as the wheel turns toward the dark half of the year.",
       colors: ["Black", "Orange", "Deep purple"],

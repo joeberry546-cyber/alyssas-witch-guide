@@ -13,6 +13,10 @@
   .wedge { cursor: pointer; stroke: var(--ivory); stroke-width: 1.5; }
   .wedge.today { filter: drop-shadow(0 0 4px rgba(184,145,47,0.6)); }
   .wedge-label { font-family: var(--font-body); font-size: 8.5px; fill: var(--ink); pointer-events: none; }
+  .month-box { stroke: var(--ivory); stroke-width: 1; }
+  .month-box.current { stroke: var(--pine); stroke-width: 1.5; }
+  .month-label { font-family: var(--font-body); font-size: 9px; letter-spacing: 0.6px; fill: var(--ink); pointer-events: none; }
+  .month-label.current { font-weight: 700; fill: var(--pine-deep); }
   .wedge-label.today-label { font-weight: 600; fill: var(--pine-deep); }
   .center-text { font-family: var(--font-display); fill: var(--pine); text-anchor: middle; }
   .pointer { fill: var(--gold); }
@@ -66,7 +70,13 @@
 initNav({ page: 'wheel', title: "Wheel of the Year", eyebrow: "Alyssa's Guide to Witchcraft" });
 
 const NS = "http://www.w3.org/2000/svg";
-const CX = 150, CY = 150, R_OUTER = 130, R_INNER = 55, R_LABEL = 95;
+const CX = 150, CY = 150, R_OUTER = 112, R_INNER = 48, R_LABEL = 82;
+const R_MONTH_IN = 115, R_MONTH_OUT = 136, R_MONTH_TEXT = 122.5;
+const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function wheelAngleFor(date) {
+  const p = WheelData.getWheelPosition(date, AstroCore);
+  return WheelData.ORDER.indexOf(p.prev.id) * 45 + p.fraction * 45;
+}
 
 function pt(r, angleDeg) {
   const rad = angleDeg * Math.PI / 180;
@@ -86,6 +96,13 @@ function showDetail(id, scroll = true) {
   const s = WheelData.SABBATS[id];
   document.getElementById('detailSubtitle').textContent = s.subtitle;
   document.getElementById('detailName').textContent = s.name;
+  let dateLine = s.dateText;
+  if (s.solar) {
+    const yr = new Date().getFullYear();
+    const d = WheelData.sabbatsForYear(yr, AstroCore).find(x => x.id === id).date;
+    dateLine += ' (' + yr + ': ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + ')';
+  }
+  document.getElementById('detailDate').textContent = dateLine;
   document.getElementById('detailMeaning').textContent = s.meaning;
   document.getElementById('detailColors').innerHTML = s.colors.map(c => `<span class="pill">${c}</span>`).join('');
   document.getElementById('detailHerbs').innerHTML = s.herbs.map(c => `<span class="pill teal">${c}</span>`).join('');
@@ -136,6 +153,38 @@ function buildWheel() {
     svg.appendChild(label);
   });
 
+  // month ring: boundaries use the same sabbat-to-sabbat timeline as the pointer
+  const yr = now.getFullYear();
+  const starts = [];
+  for (let m = 0; m < 12; m++) starts.push(wheelAngleFor(new Date(yr, m, 1, 12)));
+  starts.push(starts[0] + 360);
+  for (let m = 0; m < 12; m++) {
+    const eff0 = mod360(starts[m] - currentAngle);
+    const eff1 = eff0 + (starts[m + 1] - starts[m]);
+    const isCur = m === now.getMonth();
+    const box = document.createElementNS(NS, 'path');
+    box.setAttribute('d', annulusPath(R_MONTH_IN, R_MONTH_OUT, eff0, eff1));
+    box.setAttribute('class', 'month-box' + (isCur ? ' current' : ''));
+    box.setAttribute('fill', isCur ? 'var(--rose)' : (m % 2 === 0 ? '#F3EEDD' : '#D9DEC3'));
+    svg.appendChild(box);
+
+    const [sx, sy] = pt(R_MONTH_TEXT, eff0), [ex, ey] = pt(R_MONTH_TEXT, eff1);
+    const arc = document.createElementNS(NS, 'path');
+    arc.setAttribute('id', 'monthArc' + m);
+    arc.setAttribute('d', `M${sx},${sy} A${R_MONTH_TEXT},${R_MONTH_TEXT} 0 0 1 ${ex},${ey}`);
+    arc.setAttribute('fill', 'none');
+    svg.appendChild(arc);
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('class', 'month-label' + (isCur ? ' current' : ''));
+    t.setAttribute('text-anchor', 'middle');
+    const tp = document.createElementNS(NS, 'textPath');
+    tp.setAttribute('href', '#monthArc' + m);
+    tp.setAttribute('startOffset', '50%');
+    tp.textContent = MONTHS[m];
+    t.appendChild(tp);
+    svg.appendChild(t);
+  }
+
   // center
   const centerCircle = document.createElementNS(NS, 'circle');
   centerCircle.setAttribute('cx', CX); centerCircle.setAttribute('cy', CY);
@@ -163,9 +212,9 @@ function buildWheel() {
 
   // fixed pointer at top
   const pointer = document.createElementNS(NS, 'polygon');
-  const a = pt(R_OUTER + 4, 0);
-  const b = pt(R_OUTER + 16, -5);
-  const c = pt(R_OUTER + 16, 5);
+  const a = pt(R_MONTH_OUT + 1, 0);   // tip points inward at today
+  const b = pt(R_MONTH_OUT + 12, -5);
+  const c = pt(R_MONTH_OUT + 12, 5);
   pointer.setAttribute('points', `${a[0]},${a[1]} ${b[0]},${b[1]} ${c[0]},${c[1]}`);
   pointer.setAttribute('class', 'pointer');
   svg.appendChild(pointer);
