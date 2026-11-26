@@ -13,6 +13,7 @@
     { id: 'spellcrafting', href: 'spellcrafting.html', label: 'Spellcrafting', glyph: '✦' },
     { id: 'herbs', href: 'herbs.html', label: 'Herbs', glyph: '❧' },
     { id: 'crystals', href: 'crystals.html', label: 'Crystals', glyph: '◆' },
+    { id: 'colors', href: 'colors.html', label: 'Colors', glyph: '❖' },
     { id: 'chakras', href: 'chakras.html', label: 'Chakras', glyph: '✺' },
     { id: 'principles', href: 'principles.html', label: 'Principles', glyph: '◈' },
     { id: 'spells', href: 'spells.html', label: 'Spells', glyph: '✒' },

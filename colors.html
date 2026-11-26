@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Colors</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  .swatch { display:block; width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(20,30,20,0.35); }
+  #colorGrid .symbol-tile { border: 1px solid rgba(20,30,20,0.35); }
+  #colorGrid .symbol-tile .label {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  #colorGrid .symbol-tile.selected {
+    border-color: var(--pine);
+    box-shadow: 0 0 0 2px var(--ivory), 0 0 0 4px var(--pine);
+  }
+  .color-detail .detail-head { display:flex; align-items:center; gap:12px; margin-bottom: 4px; }
+  .color-detail .detail-swatch { width: 44px; height: 44px; flex-shrink: 0; }
+  .color-detail h2 { margin-bottom: 0; }
+  .color-detail .tag {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.15rem;
+    color: var(--teal);
+    margin: 0 0 12px;
+  }
+  .color-detail .keywords { margin: 0 0 10px; }
+  .color-detail .vision-note { margin: 0; font-style: italic; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <p class="muted center small">Tap a color for what it means to me.</p>
+
+    <div class="symbol-grid" id="colorGrid"></div>
+
+    <div class="divider"></div>
+
+    <div class="card rose-accent color-detail" id="colorDetail">
+      <div class="detail-head">
+        <span class="swatch detail-swatch" id="detailSwatch"></span>
+        <h2 id="detailName"></h2>
+      </div>
+      <p class="tag" id="detailTag"></p>
+      <p class="keywords" id="detailKeywords"></p>
+      <p class="vision-note" id="detailNote"></p>
+    </div>
+
+  </div>
+</div>
+
+<script src="shared/colors-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'colors', title: "Colors", eyebrow: "Alyssa's Guide to Witchcraft" });
+
+const colorGrid = document.getElementById('colorGrid');
+
+function showColor(c, tile) {
+  document.querySelectorAll('#colorGrid .symbol-tile').forEach(t => t.classList.remove('selected'));
+  tile.classList.add('selected');
+
+  document.getElementById('detailSwatch').style.background = c.hex;
+  document.getElementById('detailName').textContent = c.name;
+  document.getElementById('detailTag').textContent = c.tag;
+  document.getElementById('detailKeywords').textContent = c.keywords.join(', ');
+  const note = document.getElementById('detailNote');
+  note.textContent = c.note;
+  note.style.display = c.note ? '' : 'none';
+}
+
+function luminance(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+}
+function labelColor(hex) {
+  const L = luminance(hex);
+  const contrastWhite = 1.05 / (L + 0.05);
+  const contrastBlack = (L + 0.05) / 0.05;
+  return contrastBlack >= contrastWhite ? '#000000' : '#FFFFFF';
+}
+
+ColorsData.COLORS.forEach((c) => {
+  const tile = document.createElement('div');
+  tile.className = 'symbol-tile';
+  tile.style.background = c.hex;
+  tile.style.color = labelColor(c.hex);
+  tile.innerHTML = `<span class="label">${c.name}</span>`;
+  tile.addEventListener('click', () => showColor(c, tile));
+  colorGrid.appendChild(tile);
+});
+
+showColor(ColorsData.COLORS[0], colorGrid.children[0]);
+</script>
+</body>
+</html>
