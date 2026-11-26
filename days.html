@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Days of the Week</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  .star-wrap { display:flex; justify-content:center; margin: 2px 0 8px; }
+  #daysStar { width:100%; max-width:380px; height:auto; }
+  .dvert { cursor:pointer; }
+  .dvert .dot { fill: var(--pine); stroke: var(--ivory); stroke-width:1.5; transition: fill 0.15s ease; }
+  .dvert .num { font-family: var(--font-body); font-size:11px; fill: var(--ivory); text-anchor:middle; pointer-events:none; }
+  .dvert.today .dot { stroke: var(--gold); stroke-width:3; }
+  .dvert.selected .dot { fill: var(--rose); stroke: var(--rose-deep); stroke-width:3; }
+  .dvert.selected .num { fill: var(--pine-deep); }
+  .dlabel { font-family: var(--font-display); font-weight:600; font-size:15px; fill: var(--pine); text-anchor:middle; pointer-events:none; }
+  .dplanet { font-family: var(--font-body); font-size:11.5px; fill: var(--ink-soft); text-anchor:middle; pointer-events:none; }
+  .dvert.selected .dlabel { fill: var(--rose-deep); }
+
+  .symbol-tile.today { border-color: var(--gold); border-width: 2px; }
+
+  .day-detail { margin-top: 14px; }
+  .day-detail h2 { margin-bottom: 2px; }
+  .day-detail .sub { font-style: italic; color: var(--ink-soft); font-size: 0.9rem; }
+  .dfield { margin: 0 0 12px; }
+  .dfield .k { display:block; font-family: var(--font-display); font-weight:600; color: var(--teal); font-size: 0.98rem; margin-bottom: 1px; }
+  .dfield .v { font-size: 0.9rem; line-height: 1.5; }
+  .swatch { display:inline-block; width:11px; height:11px; border-radius:50%; border:1px solid var(--ink-soft); margin-right:6px; vertical-align:-1px; }
+  .quote { font-family: var(--font-display); font-style: italic; font-size: 1.1rem; color: var(--ink); }
+  .video-link { color: var(--teal); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--teal); }
+  .credit { margin: 4px 0 0; padding-top: 10px; border-top: 1px solid var(--ivory-dim); }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <p class="muted center small" style="margin-top:0;">Follow the star from point to point, 1 to 7, and you walk the week.<br>Tap a day to see its correspondences.</p>
+
+    <div class="card center">
+      <div class="star-wrap"><svg id="daysStar" viewBox="0 0 380 370" role="img" aria-label="Seven-pointed star linking the planets and the days of the week"></svg></div>
+    </div>
+
+    <div class="symbol-grid" id="dayGrid"></div>
+
+    <div class="card rose-accent day-detail" id="dayDetail"></div>
+
+  </div>
+</div>
+
+<script src="shared/days-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'days', title: 'Days of the Week', eyebrow: "Alyssa's Guide to Witchcraft" });
+
+const DNS = "http://www.w3.org/2000/svg";
+const DCX = 190, DCY = 190, D_R = 110;
+const D_LABELS = [[190,24],[313,86],[334,236],[258,326],[122,326],[46,236],[66,86]];
+const todayIdx = new Date().getDay();   // 0 = Sunday, matches DaysData.DAYS order
+let selectedIdx = todayIdx;
+
+function del(tag, attrs, text) {
+  const e = document.createElementNS(DNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function vertex(pos) {
+  const a = (-90 + pos * 360 / 7) * Math.PI / 180;
+  return [DCX + D_R * Math.cos(a), DCY + D_R * Math.sin(a)];
+}
+
+const svg = document.getElementById('daysStar');
+svg.appendChild(del('circle', { cx: DCX, cy: DCY, r: D_R, fill: 'none', stroke: 'var(--moss-soft)', 'stroke-width': 1, 'stroke-dasharray': '3 4' }));
+
+const pts = DaysData.DAYS.map(d => vertex(d.pos));
+const pathD = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ') + ' Z';
+svg.appendChild(del('path', { d: pathD, fill: 'none', stroke: 'var(--teal)', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }));
+
+const vertexEls = [];
+DaysData.DAYS.forEach((d, i) => {
+  const [x, y] = pts[i];
+  const [lx, ly] = D_LABELS[d.pos];
+  const g = del('g', { class: 'dvert' + (i === todayIdx ? ' today' : ''), role: 'button', 'aria-label': d.day + ', ' + d.planet });
+  g.appendChild(del('circle', { cx: x, cy: y, r: 22, fill: 'transparent' }));
+  g.appendChild(del('circle', { cx: x, cy: y, r: 12, class: 'dot' }));
+  g.appendChild(del('text', { x: x, y: y, class: 'num', 'dominant-baseline': 'central' }, String(i + 1)));
+  g.appendChild(del('rect', { x: lx - 40, y: ly - 14, width: 80, height: 40, fill: 'transparent' }));
+  g.appendChild(del('text', { x: lx, y: ly, class: 'dlabel' }, d.day));
+  g.appendChild(del('text', { x: lx, y: ly + 17, class: 'dplanet' }, d.symbol + '︎ ' + d.planet));
+  g.addEventListener('click', () => selectDay(i, true));
+  svg.appendChild(g);
+  vertexEls.push(g);
+});
+
+const grid = document.getElementById('dayGrid');
+const tiles = [];
+DaysData.DAYS.forEach((d, i) => {
+  const t = document.createElement('div');
+  t.className = 'symbol-tile' + (i === todayIdx ? ' today' : '');
+  t.innerHTML = `<span class="glyph">${d.symbol}︎</span><span class="label">${d.day}</span>`;
+  t.addEventListener('click', () => selectDay(i, false));
+  tiles.push(t);
+  grid.appendChild(t);
+});
+
+function selectDay(i, fromStar) {
+  selectedIdx = i;
+  const d = DaysData.DAYS[i];
+  vertexEls.forEach((g, j) => g.classList.toggle('selected', j === i));
+  tiles.forEach((t, j) => t.classList.toggle('selected', j === i));
+  const detail = document.getElementById('dayDetail');
+  detail.innerHTML = `
+    <h2>${d.symbol}︎ ${d.title}</h2>
+    <div class="sub">${d.day}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px;">
+      <span class="pill teal">${d.planet}</span>
+      <span class="pill gold">Day ${i + 1} of the week</span>
+    </div>
+    <div class="dfield"><span class="k">Named for</span><span class="v">${d.namedFor}</span></div>
+    <div class="dfield"><span class="k">Energy focus</span><span class="v">${d.energy}</span></div>
+    <div class="dfield"><span class="k">Color</span><span class="v"><i class="swatch" style="background:${d.swatch}"></i>${d.colorName}, ${d.colorNote}.</span></div>
+    <div class="dfield"><span class="k">Spell</span><span class="v quote">“${d.spell}”</span></div>
+    <div class="dfield"><span class="k">Sigil idea</span><span class="v">${d.sigil}</span></div>
+    <div class="dfield"><span class="k">Affirmation</span><span class="v quote">“${d.affirmation}”</span></div>
+    <div class="dfield"><span class="k">Ritual video</span><span class="v"><a class="video-link" href="${d.video}" target="_blank" rel="noopener">Watch the ${d.title} ritual ↗</a></span></div>
+    <p class="small muted credit">Source: ${DaysData.SOURCE}</p>
+  `;
+  if (fromStar) setTimeout(() => detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+}
+
+selectDay(todayIdx, false);
+</script>
+</body>
+</html>

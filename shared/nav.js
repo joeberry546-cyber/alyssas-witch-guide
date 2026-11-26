@@ -6,6 +6,7 @@
     { id: 'wheel', href: 'wheel.html', label: 'Wheel of the Year', glyph: '☸' },
     { id: 'solar', href: 'solar-hours.html', label: 'Solar Hours', glyph: '☉' },
     { id: 'moon', href: 'moon-cycle.html', label: 'Moon Cycles', glyph: '☽' },
+    { id: 'days', href: 'days.html', label: 'Days of the Week', glyph: '✧' },
     { id: 'astrology', href: 'astrology.html', label: 'Astrology', glyph: '✶' },
     { id: 'tarot', href: 'tarot.html', label: 'Tarot', glyph: '🜁' },
     { id: 'pyramid', href: 'pyramid.html', label: "Witches' Pyramid", glyph: '▲' },
