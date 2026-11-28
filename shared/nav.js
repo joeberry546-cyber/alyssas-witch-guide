@@ -17,7 +17,14 @@
     { id: 'chakras', href: 'chakras.html', label: 'Chakras', glyph: '✺' },
     { id: 'principles', href: 'principles.html', label: 'Principles', glyph: '◈' },
     { id: 'spells', href: 'spells.html', label: 'Spells', glyph: '✒' },
-    { id: 'runes', href: 'runes.html', label: 'Runes', glyph: 'ᚠ' }
+    { id: 'runes', href: 'runes.html', label: 'Runes', glyph: 'ᚠ' },
+    { id: 'athena', href: 'athena.html', label: 'Athena', glyph: '⛨' },
+    { id: 'brigid', href: 'brigid.html', label: 'Brigid', glyph: '☼' },
+    { id: 'freya', href: 'freya.html', label: 'Freya', glyph: '❦' },
+    { id: 'greek-roman', href: 'greek-roman.html', label: 'Greek and Roman', glyph: 'Ω' },
+    { id: 'norse', href: 'norse.html', label: 'Norse', glyph: 'ᛟ' },
+    { id: 'celtic', href: 'celtic.html', label: 'Celtic', glyph: '☘' },
+    { id: 'other-pantheons', href: 'other-pantheons.html', label: 'Other Pantheons', glyph: '☥' }
   ];
 
   window.initNav = function ({ page, title, eyebrow }) {

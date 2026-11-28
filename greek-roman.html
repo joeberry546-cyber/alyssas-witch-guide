@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Greek and Roman Gods</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  details.group, details.note-box {
+    border: 1px solid var(--moss-soft);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    background: #FFFDF6;
+    overflow: hidden;
+  }
+  details.note-box { border-color: var(--rose); }
+  details.group > summary, details.note-box > summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--pine);
+  }
+  details > summary::-webkit-details-marker { display: none; }
+  .chev { color: var(--gold); transition: transform 0.2s ease; font-size: 1rem; }
+  details[open] > summary > .chev { transform: rotate(180deg); }
+
+  .group-body { padding: 0 12px 10px; }
+  .group-intro { margin: 0 4px 8px; }
+
+  details.deity { border-top: 1px solid var(--ivory-dim); }
+  details.deity > summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 4px;
+    cursor: pointer;
+  }
+  .deity-name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--pine);
+  }
+  .deity-greek {
+    font-family: 'Gentium Plus', Palatino, 'Palatino Linotype', 'Times New Roman', serif;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+  }
+  .deity-spacer { flex: 1; }
+  .deity .pill { margin: 0; }
+
+  .deity-body { padding: 0 4px 14px; }
+  .deity-body .roman { margin: 0 0 8px; font-style: italic; color: var(--teal); font-family: var(--font-display); font-size: 1.1rem; }
+  .field { margin: 0 0 6px; font-size: 0.92rem; line-height: 1.45; }
+  .field b { font-family: var(--font-display); color: var(--pine); font-size: 1rem; font-weight: 600; }
+  .fest { margin: 0 0 6px; padding-left: 1.1rem; font-size: 0.9rem; line-height: 1.45; }
+  .fest li { margin-bottom: 3px; }
+  .sphere-note { margin: 8px 0 0; font-size: 0.85rem; color: var(--ink-soft); font-style: italic; }
+  .deity-note { margin: 8px 0 0; font-size: 0.88rem; }
+
+  .note-body { padding: 0 16px 12px; }
+  .note-body h3 { margin: 12px 0 4px; }
+  .note-body p { margin: 0 0 8px; font-size: 0.92rem; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <p class="muted center small">Greek names first, with the Roman counterparts. Tap a group, then a god.</p>
+
+    <details class="note-box">
+      <summary>Ouranian and chthonic <span class="chev" aria-hidden="true">▾</span></summary>
+      <div class="note-body">
+        <h3>Ouranian</h3>
+        <p>The Ouranian gods are the powers of the bright sky and the Olympian court. They were honored by day, with white or light-colored animals sacrificed at raised altars. The gods' portion was burned, the worshippers shared the meat, and prayers were offered with hands raised toward the sky.</p>
+        <h3>Chthonic</h3>
+        <p>The chthonic gods (pronounced THON-ik, from the Greek word for "earth") are the powers of the ground and the underworld. They were honored at dusk or night, with dark animals offered at low altars or in pits. The offering was often burned whole or its blood poured out, with no shared meal, and libations went down into the earth. Chthonic doesn't mean evil. These gods govern the dead, but also grain, fertility, and the wealth that grows from the ground.</p>
+        <h3>A note on the split</h3>
+        <p>The split is a way scholars describe differences in worship, and the Greeks didn't draw it as sharply as the labels suggest. Many gods belonged to both: Zeus was worshipped as Zeus Chthonios, and Hermes guided souls to the underworld. The "Sphere" label on each entry is a lean, not a rule.</p>
+      </div>
+    </details>
+
+    <details class="note-box">
+      <summary>A note on festival dates <span class="chev" aria-hidden="true">▾</span></summary>
+      <div class="note-body">
+        <p>Roman festivals fell on fixed calendar dates, so those are exact. Greek festivals followed city calendars based on the moon, and the Athenian months drift against ours, so their timing is approximate. Months are given by name with a modern range, and days are given where they're known. "Monthly" lines are days of every month that were sacred to a god.</p>
+      </div>
+    </details>
+
+    <div id="groups"></div>
+
+  </div>
+</div>
+
+<script src="shared/greek-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'greek-roman', title: "Greek and Roman", eyebrow: "Alyssa's Guide to Witchcraft" });
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function pillClass(sphere) {
+  if (sphere === 'Ouranian') return 'pill gold';
+  if (sphere === 'Chthonic') return 'pill teal';
+  if (sphere === 'Both') return 'pill rose';
+  return 'pill';
+}
+
+function field(label, value) {
+  return value ? `<p class="field"><b>${label}:</b> ${esc(value)}</p>` : '';
+}
+
+function festivalsHTML(list) {
+  if (!list || !list.length) return '';
+  return `<p class="field" style="margin-bottom:2px"><b>Festivals:</b></p><ul class="fest">${list.map(f => `<li>${esc(f)}</li>`).join('')}</ul>`;
+}
+
+function deityHTML(g) {
+  const greek = g.greek ? `<span class="deity-greek">${g.greek}</span>` : '';
+  const pill = g.sphere ? `<span class="${pillClass(g.sphere)}">${esc(g.sphere)}</span>` : '';
+  const roman = g.roman ? `<p class="roman">Roman: ${esc(g.roman)}</p>` : '';
+  const sphereNote = g.sphere && g.sphereNote
+    ? `<p class="sphere-note">Sphere: ${esc(g.sphere)}. ${esc(g.sphereNote)}</p>` : '';
+  const note = g.note ? `<p class="deity-note">${esc(g.note)}</p>` : '';
+  return `
+    <details class="deity">
+      <summary>
+        <span class="deity-name">${esc(g.name)}</span>${greek}
+        <span class="deity-spacer"></span>${pill}
+      </summary>
+      <div class="deity-body">
+        ${roman}
+        ${field('Parents', g.parents)}
+        ${field('Siblings', g.siblings)}
+        ${field('Offspring', g.offspring)}
+        ${field('Domains', g.domains)}
+        ${field('Animals', g.animals)}
+        ${field('Symbols', g.symbols)}
+        ${field('Plants', g.plants)}
+        ${field('Day and planet', g.day)}
+        ${festivalsHTML(g.festivals)}
+        ${sphereNote}
+        ${note}
+      </div>
+    </details>`;
+}
+
+const groupsEl = document.getElementById('groups');
+GreekData.GROUPS.forEach((grp) => {
+  const el = document.createElement('details');
+  el.className = 'group';
+  if (grp.open) el.open = true;
+  const intro = grp.intro ? `<p class="muted small group-intro">${esc(grp.intro)}</p>` : '';
+  el.innerHTML = `
+    <summary>${esc(grp.title)} <span class="chev" aria-hidden="true">▾</span></summary>
+    <div class="group-body">
+      ${intro}
+      ${grp.gods.map(deityHTML).join('')}
+    </div>`;
+  groupsEl.appendChild(el);
+});
+</script>
+</body>
+</html>

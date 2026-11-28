@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<title>Alyssa's Guide to Witchcraft — Other Pantheons</title>
+<link rel="stylesheet" href="shared/styles.css">
+<style>
+  details.group, details.note-box {
+    border: 1px solid var(--moss-soft);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    background: #FFFDF6;
+    overflow: hidden;
+  }
+  details.note-box { border-color: var(--rose); }
+  details.group > summary, details.note-box > summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--pine);
+  }
+  details > summary::-webkit-details-marker { display: none; }
+  .chev { color: var(--gold); transition: transform 0.2s ease; font-size: 1rem; }
+  details[open] > summary > .chev { transform: rotate(180deg); }
+
+  .group-body { padding: 0 12px 10px; }
+  .group-intro { margin: 0 4px 8px; }
+
+  details.deity { border-top: 1px solid var(--ivory-dim); }
+  details.deity > summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 4px;
+    cursor: pointer;
+  }
+  .deity-name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--pine);
+  }
+  .deity-greek {
+    font-family: 'Gentium Plus', Palatino, 'Palatino Linotype', 'Times New Roman', serif;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+  }
+  .deity-spacer { flex: 1; }
+  .deity .pill { margin: 0; }
+
+  .deity-body { padding: 0 4px 14px; }
+  .deity-body .roman { margin: 0 0 8px; font-style: italic; color: var(--teal); font-family: var(--font-display); font-size: 1.1rem; }
+  .field { margin: 0 0 6px; font-size: 0.92rem; line-height: 1.45; }
+  .field b { font-family: var(--font-display); color: var(--pine); font-size: 1rem; font-weight: 600; }
+  .fest { margin: 0 0 6px; padding-left: 1.1rem; font-size: 0.9rem; line-height: 1.45; }
+  .fest li { margin-bottom: 3px; }
+  .sphere-note { margin: 8px 0 0; font-size: 0.85rem; color: var(--ink-soft); font-style: italic; }
+  .deity-note { margin: 8px 0 0; font-size: 0.88rem; }
+
+  .note-body { padding: 0 16px 12px; }
+  .note-body h3 { margin: 12px 0 4px; }
+  .note-body p { margin: 0 0 8px; font-size: 0.92rem; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-content">
+
+    <p class="muted center small">Basic entries for five pantheons. Tap a group, then a god.</p>
+
+    <details class="note-box">
+      <summary>About these entries <span class="chev" aria-hidden="true">▾</span></summary>
+      <div class="note-body">
+        <p>These are basics, not the full treatment the Greek, Norse and Celtic pages get. Each pantheon has a handful of its best-known figures, with domains, symbols, animals and family where they are well known. Names and spellings vary a lot between languages and eras, so the most common English form comes first, with another name beside it where useful.</p>
+      </div>
+    </details>
+
+    <details class="note-box">
+      <summary>Living traditions <span class="chev" aria-hidden="true">▾</span></summary>
+      <div class="note-body">
+        <p>The Hindu gods are worshipped today by hundreds of millions of people, and the Maya and Nahua peoples of Mesoamerica are still here, so some of this is a living religion and not only a mythology. The Hindu entries are short, and one deity can be seen as an aspect of another. A page like this can only skim the surface, so treat it as a starting point and not a substitute for learning from people who practice.</p>
+      </div>
+    </details>
+
+    <details class="note-box">
+      <summary>A note on festivals <span class="chev" aria-hidden="true">▾</span></summary>
+      <div class="note-body">
+        <p>Most of these festivals follow lunar or local calendars, so their dates shift from year to year. I give approximate seasons, and exact dates only where they are fixed. Aztec festival months come from 16th-century Spanish chroniclers and are approximate. Where a deity has no widely known festival, the Festivals line is simply left out.</p>
+      </div>
+    </details>
+
+    <div id="groups"></div>
+
+  </div>
+</div>
+
+<script src="shared/other-pantheons-data.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+initNav({ page: 'other-pantheons', title: "Other Pantheons", eyebrow: "Alyssa's Guide to Witchcraft" });
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function pillClass(sphere) {
+  if (sphere === 'Aztec') return 'pill gold';
+  if (sphere === 'Maya') return 'pill teal';
+  if (sphere === 'Avatar') return 'pill rose';
+  return 'pill';
+}
+
+function field(label, value) {
+  return value ? `<p class="field"><b>${label}:</b> ${esc(value)}</p>` : '';
+}
+
+function festivalsHTML(list) {
+  if (!list || !list.length) return '';
+  return `<p class="field" style="margin-bottom:2px"><b>Festivals:</b></p><ul class="fest">${list.map(f => `<li>${esc(f)}</li>`).join('')}</ul>`;
+}
+
+function deityHTML(g) {
+  const greek = g.old && g.old !== g.name ? `<span class="deity-greek">${esc(g.old)}</span>` : '';
+  const pill = g.sphere ? `<span class="${pillClass(g.sphere)}">${esc(g.sphere)}</span>` : '';
+  const sphereNote = g.sphere && g.sphereNote
+    ? `<p class="sphere-note">${esc(g.sphere)}. ${esc(g.sphereNote)}</p>` : '';
+  const note = g.note ? `<p class="deity-note">${esc(g.note)}</p>` : '';
+  return `
+    <details class="deity">
+      <summary>
+        <span class="deity-name">${esc(g.name)}</span>${greek}
+        <span class="deity-spacer"></span>${pill}
+      </summary>
+      <div class="deity-body">
+        ${field('Parents', g.parents)}
+        ${field('Siblings', g.siblings)}
+        ${field('Offspring', g.offspring)}
+        ${field('Domains', g.domains)}
+        ${field('Animals', g.animals)}
+        ${field('Symbols', g.symbols)}
+        ${field('Plants', g.plants)}
+        ${field('Day and planet', g.day)}
+        ${festivalsHTML(g.festivals)}
+        ${sphereNote}
+        ${note}
+      </div>
+    </details>`;
+}
+
+const groupsEl = document.getElementById('groups');
+OtherPantheonsData.GROUPS.forEach((grp) => {
+  const el = document.createElement('details');
+  el.className = 'group';
+  if (grp.open) el.open = true;
+  const intro = grp.intro ? `<p class="muted small group-intro">${esc(grp.intro)}</p>` : '';
+  el.innerHTML = `
+    <summary>${esc(grp.title)} <span class="chev" aria-hidden="true">▾</span></summary>
+    <div class="group-body">
+      ${intro}
+      ${grp.gods.map(deityHTML).join('')}
+    </div>`;
+  groupsEl.appendChild(el);
+});
+</script>
+</body>
+</html>
